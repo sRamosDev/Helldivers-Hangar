@@ -25,6 +25,8 @@ Before you can run the application, you need to configure your environment:
 
 Copy the `.env.example` file to `.env`:
 
+Create a database in PostgreSQL named `helldivershangar` or the name you set in the `.env` file.
+
 Ensure your PostgreSQL database is running and accessible with these credentials.
 
 ## Running the Application
