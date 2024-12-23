@@ -34,6 +34,8 @@ Start the application with:
 
 The API will be available at http://localhost:3000.
 
+After the first run, use the file populate-db.sql to populate the database with the necessary data.
+
 ## License
 
 This project is licensed under the MIT License.

@@ -43,7 +43,23 @@ export class LoadoutsService {
   }
 
   async findOne(uniqueId: string): Promise<Loadout> {
-    return this.loadoutsRepository.findOne({ where: { uniqueId } });
+    return this.loadoutsRepository.findOne({
+      where: { uniqueId },
+      relations: [
+        'helmet',
+        'helmet.passive',
+        'armor',
+        'armor.passive',
+        'cape',
+        'cape.passive',
+        'primary_weapon',
+        'primary_weapon.traits',
+        'secondary_weapon',
+        'secondary_weapon.traits',
+        'throwable',
+        // 'throwable.traits',
+      ],
+    });
   }
 
   async update(id: number, loadoutData: any): Promise<Loadout> {
