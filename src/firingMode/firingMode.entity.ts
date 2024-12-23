@@ -1,4 +1,3 @@
-// src/entities/firingMode.entity.ts
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PrimaryWeapon } from '../primaryWeapon/primaryWeapon.entity';
 import { SecondaryWeapon } from '../secondaryWeapon/secondaryWeapon.entity';

@@ -11,6 +11,9 @@ export class Loadout {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ unique: true })
+  uniqueId: string;
+
   @Column()
   name: string;
 

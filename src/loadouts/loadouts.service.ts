@@ -1,8 +1,8 @@
-// src/loadouts/loadouts.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Loadout } from './loadout.entity';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class LoadoutsService {
@@ -22,9 +22,12 @@ export class LoadoutsService {
       throwableId,
     } = loadoutData;
 
+    const uniqueId = this.generateUniqueId();
+
     const loadout = this.loadoutsRepository.create({
       name,
-      helmet: { id: helmetId }, // Assuming you'll fetch or link these similarly
+      uniqueId,
+      helmet: { id: helmetId },
       armor: { id: armorId },
       cape: { id: capeId },
       primary_weapon: { id: primaryWeaponId },
@@ -39,8 +42,8 @@ export class LoadoutsService {
     return this.loadoutsRepository.find();
   }
 
-  async findOne(id: number): Promise<Loadout> {
-    return this.loadoutsRepository.findOne({ where: { id } });
+  async findOne(uniqueId: string): Promise<Loadout> {
+    return this.loadoutsRepository.findOne({ where: { uniqueId } });
   }
 
   async update(id: number, loadoutData: any): Promise<Loadout> {
@@ -73,5 +76,12 @@ export class LoadoutsService {
 
   async remove(id: number): Promise<void> {
     await this.loadoutsRepository.delete(id);
+  }
+
+  private generateUniqueId(): string {
+    return randomBytes(8)
+      .toString('base64')
+      .replace(/\//g, '_')
+      .replace(/\+/g, '-');
   }
 }

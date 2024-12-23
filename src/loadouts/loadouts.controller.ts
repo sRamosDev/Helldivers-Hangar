@@ -1,4 +1,3 @@
-// src/loadouts/loadouts.controller.ts
 import {
   Body,
   Controller,
@@ -36,9 +35,9 @@ export class LoadoutsController {
     return this.loadoutsService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Loadout> {
-    return this.loadoutsService.findOne(+id);
+  @Get(':uniqueId')
+  async findOne(@Param('uniqueId') uniqueId: string): Promise<Loadout> {
+    return this.loadoutsService.findOne(uniqueId);
   }
 
   @Put(':id')
