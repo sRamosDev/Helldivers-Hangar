@@ -23,7 +23,7 @@ export class ArmorController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: 'public/images',
+        destination: 'public/images/armors',
         filename: (req, file, cb) => {
           const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
           cb(null, uniqueSuffix);
@@ -35,7 +35,7 @@ export class ArmorController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
   ) {
-    const imageUrl = `images/${file.filename}`;
+    const imageUrl = `images/armors/${file.filename}`;
     await this.armorService.updateImageUrl(id, imageUrl);
     return { filename: file.filename };
   }
@@ -44,7 +44,7 @@ export class ArmorController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: 'public/images',
+        destination: 'public/images/armors',
         filename: (req, file, cb) => {
           const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
           cb(null, uniqueSuffix);
@@ -58,10 +58,14 @@ export class ArmorController {
     armorData: {
       name: string;
       description: string;
-      armor: number;
+      type: string;
+      armor_rating: number;
+      speed: number;
+      stamina_regen: number;
+      passiveIds: number[];
     },
   ) {
-    const imageUrl = `images/${file.filename}`;
+    const imageUrl = `images/armors/${file.filename}`;
     return this.armorService.create({ ...armorData, imageUrl });
   }
 
@@ -83,12 +87,16 @@ export class ArmorController {
     armorData: {
       name: string;
       description: string;
-      armor: number;
+      type: string;
+      armor_rating: number;
+      speed: number;
+      stamina_regen: number;
+      passiveIds: number[];
     },
   ) {
     let imageUrl: string;
     if (file) {
-      imageUrl = `images/${file.filename}`;
+      imageUrl = `images/armors/${file.filename}`;
       await this.armorService.updateImageUrl(+id, imageUrl);
     } else {
       const armor = await this.armorService.findOne(+id);

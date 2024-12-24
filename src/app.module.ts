@@ -59,7 +59,7 @@ dotenv.config();
           FiringMode,
           User,
         ],
-        synchronize: configService.get<boolean>('DB_SYNCHRONIZE'), // Use environment variable
+        synchronize: configService.get<boolean>('DB_SYNCHRONIZE'),
       }),
     }),
     LoadoutsModule,

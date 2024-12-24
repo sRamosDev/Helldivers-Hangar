@@ -23,7 +23,7 @@ export class CapeController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: 'public/images',
+        destination: 'public/images/capes',
         filename: (req, file, cb) => {
           const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
           cb(null, uniqueSuffix);
@@ -35,7 +35,7 @@ export class CapeController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
   ) {
-    const imageUrl = `public/images/${file.filename}`;
+    const imageUrl = `images/capes/${file.filename}`;
     await this.capeService.updateImageUrl(id, imageUrl);
     return { filename: file.filename };
   }
@@ -44,7 +44,7 @@ export class CapeController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: 'public/images',
+        destination: 'public/images/capes/',
         filename: (req, file, cb) => {
           const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
           cb(null, uniqueSuffix);
@@ -58,10 +58,14 @@ export class CapeController {
     capeData: {
       name: string;
       description: string;
-      cape: number;
+      type: string;
+      cape_rating: number;
+      speed: number;
+      stamina_regen: number;
+      passiveIds: number[];
     },
   ) {
-    const imageUrl = `public/images/${file.filename}`;
+    const imageUrl = `images/capes/${file.filename}`;
     return this.capeService.create({ ...capeData, imageUrl });
   }
 
@@ -76,17 +80,6 @@ export class CapeController {
   }
 
   @Put(':id')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: 'public/images',
-        filename: (req, file, cb) => {
-          const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
-          cb(null, uniqueSuffix);
-        },
-      }),
-    }),
-  )
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
@@ -94,12 +87,16 @@ export class CapeController {
     capeData: {
       name: string;
       description: string;
-      cape: number;
+      type: string;
+      cape_rating: number;
+      speed: number;
+      stamina_regen: number;
+      passiveIds: number[];
     },
   ) {
     let imageUrl: string;
     if (file) {
-      imageUrl = `public/images/${file.filename}`;
+      imageUrl = `images/capes/${file.filename}`;
       await this.capeService.updateImageUrl(+id, imageUrl);
     } else {
       const cape = await this.capeService.findOne(+id);

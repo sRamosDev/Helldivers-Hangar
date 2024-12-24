@@ -23,7 +23,7 @@ export class HelmetController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: 'public/images',
+        destination: 'public/images/hemlets',
         filename: (req, file, cb) => {
           const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
           cb(null, uniqueSuffix);
@@ -35,7 +35,7 @@ export class HelmetController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
   ) {
-    const imageUrl = `images/${file.filename}`;
+    const imageUrl = `images/hemlets/${file.filename}`;
     await this.helmetService.updateImageUrl(id, imageUrl);
     return { filename: file.filename };
   }
@@ -44,7 +44,7 @@ export class HelmetController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: 'public/images',
+        destination: 'public/images/hemlets',
         filename: (req, file, cb) => {
           const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
           cb(null, uniqueSuffix);
@@ -58,10 +58,14 @@ export class HelmetController {
     helmetData: {
       name: string;
       description: string;
-      helmet: number;
+      type: string;
+      armor_rating: number;
+      speed: number;
+      stamina_regen: number;
+      passiveIds: number[];
     },
   ) {
-    const imageUrl = `images/${file.filename}`;
+    const imageUrl = `images/hemlets/${file.filename}`;
     return this.helmetService.create({ ...helmetData, imageUrl });
   }
 
@@ -83,12 +87,16 @@ export class HelmetController {
     helmetData: {
       name: string;
       description: string;
-      helmet: number;
+      type: string;
+      armor_rating: number;
+      speed: number;
+      stamina_regen: number;
+      passiveIds: number[];
     },
   ) {
     let imageUrl: string;
     if (file) {
-      imageUrl = `images/${file.filename}`;
+      imageUrl = `images/hemlets/${file.filename}`;
       await this.helmetService.updateImageUrl(+id, imageUrl);
     } else {
       const helmet = await this.helmetService.findOne(+id);

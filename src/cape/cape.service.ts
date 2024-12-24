@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cape } from './cape.entity';
+import { Passive } from '../passive/passive.entity';
 
 @Injectable()
 export class CapeService {
   constructor(
     @InjectRepository(Cape)
     private readonly capeRepository: Repository<Cape>,
+    @InjectRepository(Passive)
+    private readonly passiveRepository: Repository<Passive>,
   ) {}
 
   async updateImageUrl(id: number, imageUrl: string): Promise<Cape> {
@@ -22,10 +25,20 @@ export class CapeService {
   async create(capeData: {
     name: string;
     description: string;
+    type: string;
+    cape_rating: number;
+    speed: number;
+    stamina_regen: number;
     imageUrl: string;
-    cape: number;
+    passiveIds: number[];
   }): Promise<Cape> {
-    const cape = this.capeRepository.create(capeData);
+    const passives = await this.passiveRepository.findByIds(
+      capeData.passiveIds,
+    );
+    const cape = this.capeRepository.create({
+      ...capeData,
+      passive: passives,
+    });
     return this.capeRepository.save(cape);
   }
 
@@ -42,15 +55,26 @@ export class CapeService {
     capeData: {
       name: string;
       description: string;
+      type: string;
+      cape_rating: number;
+      speed: number;
+      stamina_regen: number;
       imageUrl: string;
-      cape: number;
+      passiveIds: number[];
     },
   ): Promise<Cape> {
     const cape = await this.capeRepository.findOne({ where: { id } });
     if (!cape) {
       throw new Error('Cape not found');
     }
-    return this.capeRepository.save({ ...cape, ...capeData });
+    const passives = await this.passiveRepository.findByIds(
+      capeData.passiveIds,
+    );
+    return this.capeRepository.save({
+      ...cape,
+      ...capeData,
+      passive: passives,
+    });
   }
 
   async remove(id: number): Promise<void> {

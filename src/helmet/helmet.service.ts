@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Helmet } from './helmet.entity';
+import { Passive } from '../passive/passive.entity';
 
 @Injectable()
 export class HelmetService {
   constructor(
     @InjectRepository(Helmet)
     private readonly helmetRepository: Repository<Helmet>,
+    @InjectRepository(Passive)
+    private readonly passiveRepository: Repository<Passive>,
   ) {}
 
   async updateImageUrl(id: number, imageUrl: string): Promise<Helmet> {
@@ -22,10 +25,20 @@ export class HelmetService {
   async create(helmetData: {
     name: string;
     description: string;
+    type: string;
+    armor_rating: number;
+    speed: number;
+    stamina_regen: number;
     imageUrl: string;
-    helmet: number;
+    passiveIds: number[];
   }): Promise<Helmet> {
-    const helmet = this.helmetRepository.create(helmetData);
+    const passives = await this.passiveRepository.findByIds(
+      helmetData.passiveIds,
+    );
+    const helmet = this.helmetRepository.create({
+      ...helmetData,
+      passive: passives,
+    });
     return this.helmetRepository.save(helmet);
   }
 
@@ -42,15 +55,26 @@ export class HelmetService {
     helmetData: {
       name: string;
       description: string;
+      type: string;
+      armor_rating: number;
+      speed: number;
+      stamina_regen: number;
       imageUrl: string;
-      helmet: number;
+      passiveIds: number[];
     },
   ): Promise<Helmet> {
     const helmet = await this.helmetRepository.findOne({ where: { id } });
     if (!helmet) {
       throw new Error('Helmet not found');
     }
-    return this.helmetRepository.save({ ...helmet, ...helmetData });
+    const passives = await this.passiveRepository.findByIds(
+      helmetData.passiveIds,
+    );
+    return this.helmetRepository.save({
+      ...helmet,
+      ...helmetData,
+      passive: passives,
+    });
   }
 
   async remove(id: number): Promise<void> {
