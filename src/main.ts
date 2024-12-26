@@ -8,7 +8,7 @@ async function bootstrap() {
   app.useStaticAssets(path.join(__dirname, '../public/images'), {
     prefix: '/images/',
   });
-  await app.listen(80);
+  await app.listen(8080);
 }
 
 bootstrap();
