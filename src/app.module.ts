@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as net from 'net';
 
 import { Loadout } from './loadouts/loadout.entity';
 import { Helmet } from './helmet/helmet.entity';
@@ -60,38 +59,7 @@ import { AuthModule } from './auth/auth.module';
           ],
           synchronize: false,
         };
-        const checkConnection = (host: string, port: number) => {
-          return new Promise((resolve, reject) => {
-            const socket = new net.Socket();
-            socket.setTimeout(3000);
-            socket.on('connect', () => {
-              console.log(`Connection to ${host}:${port} successful`);
-              socket.destroy();
-              resolve(true);
-            });
-            socket.on('error', (err) => {
-              console.error(
-                `Connection to ${host}:${port} failed: ${err.message}`,
-              );
-              reject(false);
-            });
-            socket.on('timeout', () => {
-              console.error(`Connection to ${host}:${port} timed out`);
-              reject(false);
-            });
-            socket.connect(port, host);
-          });
-        };
 
-        try {
-          await checkConnection(dbConfig.host, dbConfig.port);
-        } catch (error) {
-          console.error('Database connection check failed:', error);
-        }
-
-        console.log(`DB Host: ${dbConfig.host}`);
-        console.log(`DB Port: ${dbConfig.port}`);
-        console.log(`DB Name: ${dbConfig.database}`);
         return dbConfig;
       },
     }),
