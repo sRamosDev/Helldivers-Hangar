@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as dotenv from 'dotenv';
+import * as net from 'net';
 
 import { Loadout } from './loadouts/loadout.entity';
 import { Helmet } from './helmet/helmet.entity';
@@ -29,8 +29,6 @@ import { AuthModule } from './auth/auth.module';
 
 //import { AggregateController } from './aggregate.controller';
 
-dotenv.config();
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -39,28 +37,63 @@ dotenv.config();
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: +configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
-        entities: [
-          Loadout,
-          Throwable,
-          PrimaryWeapon,
-          Passive,
-          SecondaryWeapon,
-          Cape,
-          Armor,
-          Helmet,
-          Trait,
-          FiringMode,
-          User,
-        ],
-        synchronize: configService.get<boolean>('DB_SYNCHRONIZE'),
-      }),
+      useFactory: async () => {
+        const dbConfig: TypeOrmModuleOptions = {
+          type: 'postgres',
+          host: process.env.DB_HOST,
+          port: +process.env.DB_PORT,
+          username: process.env.DB_USERNAME,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME,
+          entities: [
+            Loadout,
+            Throwable,
+            PrimaryWeapon,
+            Passive,
+            SecondaryWeapon,
+            Cape,
+            Armor,
+            Helmet,
+            Trait,
+            FiringMode,
+            User,
+          ],
+          synchronize: false,
+        };
+        const checkConnection = (host: string, port: number) => {
+          return new Promise((resolve, reject) => {
+            const socket = new net.Socket();
+            socket.setTimeout(3000);
+            socket.on('connect', () => {
+              console.log(`Connection to ${host}:${port} successful`);
+              socket.destroy();
+              resolve(true);
+            });
+            socket.on('error', (err) => {
+              console.error(
+                `Connection to ${host}:${port} failed: ${err.message}`,
+              );
+              reject(false);
+            });
+            socket.on('timeout', () => {
+              console.error(`Connection to ${host}:${port} timed out`);
+              reject(false);
+            });
+            socket.connect(port, host);
+          });
+        };
+
+        try {
+          await checkConnection(dbConfig.host, dbConfig.port);
+        } catch (error) {
+          console.error('Database connection check failed:', error);
+        }
+
+        console.log(`DB Host: ${dbConfig.host}`);
+        console.log(`DB Port: ${dbConfig.port}`);
+        console.log(`DB Name: ${dbConfig.database}`);
+        return dbConfig;
+      },
     }),
     LoadoutsModule,
     FiringModeModule,
@@ -74,6 +107,5 @@ dotenv.config();
     CapeModule,
     AuthModule,
   ],
-  //controllers: [AggregateController],
 })
 export class AppModule {}
