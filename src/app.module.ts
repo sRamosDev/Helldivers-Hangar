@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
 import { Loadout } from './loadouts/loadout.entity';
 import { Helmet } from './helmet/helmet.entity';
 import { Armor } from './armor/armor.entity';
@@ -25,8 +28,6 @@ import { ThrowableModule } from './throwable/throwable.module';
 import { PassiveModule } from './passive/passive.module';
 import { TraitModule } from './trait/trait.module';
 import { AuthModule } from './auth/auth.module';
-
-//import { AggregateController } from './aggregate.controller';
 
 @Module({
   imports: [
@@ -75,5 +76,7 @@ import { AuthModule } from './auth/auth.module';
     CapeModule,
     AuthModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
