@@ -59,7 +59,7 @@ export class CapeController {
       name: string;
       description: string;
       type: string;
-      cape_rating: number;
+      armor_rating: number;
       speed: number;
       stamina_regen: number;
       passiveIds: number[];
@@ -88,7 +88,7 @@ export class CapeController {
       name: string;
       description: string;
       type: string;
-      cape_rating: number;
+      armor_rating: number;
       speed: number;
       stamina_regen: number;
       passiveIds: number[];

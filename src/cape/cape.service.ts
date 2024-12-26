@@ -26,7 +26,7 @@ export class CapeService {
     name: string;
     description: string;
     type: string;
-    cape_rating: number;
+    armor_rating: number;
     speed: number;
     stamina_regen: number;
     imageUrl: string;
@@ -56,7 +56,7 @@ export class CapeService {
       name: string;
       description: string;
       type: string;
-      cape_rating: number;
+      armor_rating: number;
       speed: number;
       stamina_regen: number;
       imageUrl: string;
