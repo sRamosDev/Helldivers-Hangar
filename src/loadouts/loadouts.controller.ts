@@ -6,9 +6,13 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { LoadoutsService } from './loadouts.service';
 import { Loadout } from './loadout.entity';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('loadouts')
 export class LoadoutsController {
@@ -41,6 +45,8 @@ export class LoadoutsController {
   }
 
   @Put(':id')
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   async update(
     @Param('id') id: string,
     @Body()

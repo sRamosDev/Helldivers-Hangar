@@ -1,11 +1,12 @@
 import {
   Body,
   Controller,
-  Get,
   Param,
   Post,
   Put,
+  Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -14,12 +15,21 @@ import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
 import { CapeService } from './cape.service';
 import { Express } from 'express';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { ActivityLogService } from '../activity-log/activity-log.service';
 
 @Controller('cape')
 export class CapeController {
-  constructor(private readonly capeService: CapeService) {}
+  constructor(
+    private readonly capeService: CapeService,
+    private readonly activityLogService: ActivityLogService,
+  ) {}
 
   @Post('image/:id')
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -34,13 +44,20 @@ export class CapeController {
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
+    @Req() req: any,
   ) {
     const imageUrl = `images/capes/${file.filename}`;
     await this.capeService.updateImageUrl(id, imageUrl);
+    await this.activityLogService.logAction(
+      req.user.id,
+      `Uploaded image for cape with ID ${id}`,
+    );
     return { filename: file.filename };
   }
 
   @Post()
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -64,22 +81,20 @@ export class CapeController {
       stamina_regen: number;
       passiveIds: number[];
     },
+    @Req() req: any,
   ) {
     const imageUrl = `images/capes/${file.filename}`;
-    return this.capeService.create({ ...capeData, imageUrl });
-  }
-
-  @Get()
-  async findAll() {
-    return this.capeService.findAll();
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.capeService.findOne(+id);
+    const cape = await this.capeService.create({ ...capeData, imageUrl });
+    await this.activityLogService.logAction(
+      req.user.id,
+      `Created cape with ID ${cape.id}`,
+    );
+    return cape;
   }
 
   @Put(':id')
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
@@ -93,6 +108,7 @@ export class CapeController {
       stamina_regen: number;
       passiveIds: number[];
     },
+    @Req() req: any,
   ) {
     let imageUrl: string;
     if (file) {
@@ -102,6 +118,14 @@ export class CapeController {
       const cape = await this.capeService.findOne(+id);
       imageUrl = cape.image_url;
     }
-    return this.capeService.update(+id, { ...capeData, imageUrl });
+    const updatedCape = await this.capeService.update(+id, {
+      ...capeData,
+      imageUrl,
+    });
+    await this.activityLogService.logAction(
+      req.user.id,
+      `Updated cape with ID ${id}`,
+    );
+    return updatedCape;
   }
 }

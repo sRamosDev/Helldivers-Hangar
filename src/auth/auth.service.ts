@@ -10,6 +10,7 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { ActivityLogService } from '../activity-log/activity-log.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
+    private activityLogService: ActivityLogService,
   ) {}
 
   async signUp(
@@ -33,6 +35,8 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const userCount = await this.usersRepository.count();
+    const role = userCount === 0 ? 'admin' : 'user';
 
     const user = this.usersRepository.create({
       name,
@@ -57,12 +61,12 @@ export class AuthService {
     return { token, refreshToken };
   }
 
-  async login(loginDto: LoginDto): Promise<{ token: string }> {
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ token: string; refreshToken: string }> {
     const { email, password } = loginDto;
 
-    const user = await this.usersRepository.findOne({
-      where: { email },
-    });
+    const user = await this.usersRepository.findOne({ where: { email } });
 
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
