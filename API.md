@@ -443,6 +443,7 @@ Authorization: Bearer <your-jwt-token>
 - **Create Cape**
     - **POST** `/cape`
     - **Description:** Create a new cape.
+    - **Authentication:** Requires a valid JWT token.
     - **Body:**
       ```json
       {
@@ -469,6 +470,7 @@ Authorization: Bearer <your-jwt-token>
 - **Update Cape**
     - **PUT** `/cape/:id`
     - **Description:** Update a cape.
+    - **Authentication:** Requires a valid JWT token.
     - **Parameters:**
         - `id` (string): The ID of the cape.
     - **Body:**
@@ -477,7 +479,7 @@ Authorization: Bearer <your-jwt-token>
         "name": "string",
         "description": "string",
         "type": "string",
-        "cape_rating": "number",
+        "armor_rating": "number",
         "speed": "number",
         "stamina_regen": "number",
         "passiveIds": "number[]"
