@@ -16,6 +16,7 @@ import { Passive } from './passive/passive.entity';
 import { Trait } from './trait/trait.entity';
 import { FiringMode } from './firingMode/firingMode.entity';
 import { User } from './users/users.entity';
+import { ActivityLog } from './activity-log/activity-log.entity';
 
 import { LoadoutsModule } from './loadouts/loadouts.module';
 import { FiringModeModule } from './firingMode/firingMode.module';
@@ -57,6 +58,7 @@ import { AuthModule } from './auth/auth.module';
             Trait,
             FiringMode,
             User,
+            ActivityLog,
           ],
           synchronize: false,
         };
@@ -74,6 +76,7 @@ import { AuthModule } from './auth/auth.module';
     HelmetModule,
     ArmorModule,
     CapeModule,
+    TypeOrmModule.forFeature([ActivityLog]),
     AuthModule,
   ],
   controllers: [AppController],
