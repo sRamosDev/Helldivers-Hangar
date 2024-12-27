@@ -29,6 +29,7 @@ import { ThrowableModule } from './throwable/throwable.module';
 import { PassiveModule } from './passive/passive.module';
 import { TraitModule } from './trait/trait.module';
 import { AuthModule } from './auth/auth.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { AuthModule } from './auth/auth.module';
     CapeModule,
     TypeOrmModule.forFeature([ActivityLog]),
     AuthModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

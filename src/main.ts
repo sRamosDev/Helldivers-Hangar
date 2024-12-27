@@ -5,7 +5,7 @@ import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', { exclude: ['health', 'health/db'] });
   app.useStaticAssets(path.join(__dirname, '../public/images'), {
     prefix: '/images/',
   });
