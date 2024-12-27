@@ -5,7 +5,7 @@ import {
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 
-@Controller('health/db')
+@Controller('health')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
@@ -13,6 +13,10 @@ export class HealthController {
   ) {}
 
   @Get()
+  healthCheck() {
+    return { status: 'ok' };
+  }
+  @Get('db')
   @HealthCheck()
   check() {
     return this.health.check([async () => this.db.pingCheck('database')]);
