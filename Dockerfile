@@ -1,19 +1,29 @@
-FROM node:20-alpine
+FROM node:20-alpine AS build
 LABEL authors="sebar"
 
 WORKDIR /usr/src/app
 
-COPY .env ./
-
 COPY package*.json ./
 
-RUN npm ci --only=production
+RUN apk update && apk add --no-cache curl
 
-RUN npm install --save @types/multer
+RUN npm ci
 
 COPY . .
 
 RUN npm run build
+
+# Stage 2: Production
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+COPY --from=build /usr/src/app/package*.json ./
+COPY --from=build /usr/src/app/dist ./dist
+
+RUN apk update && apk add --no-cache curl
+
+RUN npm ci --only=production
 
 EXPOSE 3000
 
