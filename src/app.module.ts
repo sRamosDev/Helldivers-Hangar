@@ -4,18 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
-import { Loadout } from './loadouts/loadout.entity';
-import { Helmet } from './helmet/helmet.entity';
-import { Armor } from './armor/armor.entity';
-import { Cape } from './cape/cape.entity';
-import { PrimaryWeapon } from './primaryWeapon/primaryWeapon.entity';
-import { SecondaryWeapon } from './secondaryWeapon/secondaryWeapon.entity';
-import { Throwable } from './throwable/throwable.entity';
-import { Passive } from './passive/passive.entity';
-import { Trait } from './trait/trait.entity';
-import { FiringMode } from './firingMode/firingMode.entity';
-import { User } from './users/users.entity';
+import { DatabaseService } from './database.service';
 import { ActivityLog } from './activity-log/activity-log.entity';
 
 import { LoadoutsModule } from './loadouts/loadouts.module';
@@ -47,23 +36,10 @@ import { HealthModule } from './health/health.module';
           username: process.env.DB_USERNAME,
           password: process.env.DB_PASSWORD,
           database: process.env.DB_NAME,
-          entities: [
-            Loadout,
-            Throwable,
-            PrimaryWeapon,
-            Passive,
-            SecondaryWeapon,
-            Cape,
-            Armor,
-            Helmet,
-            Trait,
-            FiringMode,
-            User,
-            ActivityLog,
-          ],
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          migrations: [__dirname + '/migrations/*{.ts,.js}'],
           synchronize: false,
         };
-
         return dbConfig;
       },
     }),
@@ -82,6 +58,6 @@ import { HealthModule } from './health/health.module';
     HealthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DatabaseService],
 })
 export class AppModule {}
