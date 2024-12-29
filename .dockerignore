@@ -1,0 +1,12 @@
+node_modules
+dist
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.idea/
+.vscode/
+*.md
+.prettierrc
+.eslintrc.js
+.jwt/
