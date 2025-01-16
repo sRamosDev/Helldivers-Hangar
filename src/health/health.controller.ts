@@ -16,6 +16,7 @@ export class HealthController {
   healthCheck() {
     return { status: 'ok' };
   }
+
   @Get('db')
   @HealthCheck()
   check() {

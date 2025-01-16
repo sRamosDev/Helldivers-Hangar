@@ -16,11 +16,4 @@ export class AuthController {
   login(@Body() loginDto: LoginDto): Promise<{ token: string }> {
     return this.authService.login(loginDto);
   }
-
-  @Post('/refresh-token')
-  refreshToken(
-    @Body('refreshToken') refreshToken: string,
-  ): Promise<{ token: string; refreshToken: string }> {
-    return this.authService.refreshToken(refreshToken);
-  }
 }

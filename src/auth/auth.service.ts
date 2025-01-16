@@ -21,9 +21,7 @@ export class AuthService {
     private activityLogService: ActivityLogService,
   ) {}
 
-  async signUp(
-    signUpDto: SignUpDto,
-  ): Promise<{ token: string; refreshToken: string }> {
+  async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
     const { name, email, password } = signUpDto;
 
     const existingUser = await this.usersRepository.findOne({
@@ -43,27 +41,19 @@ export class AuthService {
       email,
       password: hashedPassword,
       role,
-      refreshTokens: [],
     });
 
     await this.usersRepository.save(user);
 
     const token = this.jwtService.sign({ id: user.id, role: user.role });
-    const refreshToken = this.jwtService.sign(
-      { id: user.id },
-      { expiresIn: '7d' },
-    );
 
-    user.refreshTokens.push(refreshToken);
     await this.usersRepository.save(user);
 
     await this.activityLogService.logAction(user.id, 'User signed up');
-    return { token, refreshToken };
+    return { token };
   }
 
-  async login(
-    loginDto: LoginDto,
-  ): Promise<{ token: string; refreshToken: string }> {
+  async login(loginDto: LoginDto): Promise<{ token: string }> {
     const { email, password } = loginDto;
 
     const user = await this.usersRepository.findOne({ where: { email } });
@@ -79,43 +69,10 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign({ id: user.id, role: user.role });
-    const refreshToken = this.jwtService.sign(
-      { id: user.id },
-      { expiresIn: '7d' },
-    );
 
-    user.refreshTokens.push(refreshToken);
     await this.usersRepository.save(user);
 
     await this.activityLogService.logAction(user.id, 'User logged in');
-    return { token, refreshToken };
-  }
-
-  async refreshToken(
-    oldRefreshToken: string,
-  ): Promise<{ token: string; refreshToken: string }> {
-    const payload = this.jwtService.verify(oldRefreshToken);
-    const user = await this.usersRepository.findOne({
-      where: { id: payload.id },
-    });
-
-    if (!user || !user.refreshTokens.includes(oldRefreshToken)) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    const newToken = this.jwtService.sign({ id: user.id, role: user.role });
-    const newRefreshToken = this.jwtService.sign(
-      { id: user.id },
-      { expiresIn: '7d' },
-    );
-
-    user.refreshTokens = user.refreshTokens.filter(
-      (token) => token !== oldRefreshToken,
-    );
-    user.refreshTokens.push(newRefreshToken);
-    await this.usersRepository.save(user);
-
-    await this.activityLogService.logAction(user.id, 'User refreshed token');
-    return { token: newToken, refreshToken: newRefreshToken };
+    return { token };
   }
 }

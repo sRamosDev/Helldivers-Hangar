@@ -511,7 +511,6 @@ Authorization: Bearer <your-jwt-token>
       }
       ```
 
-
 # TODO: Add error handling
 
 ## Error Handling

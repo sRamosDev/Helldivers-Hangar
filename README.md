@@ -1,7 +1,8 @@
-
 # Helldiver's Hangar: Custom Loadout Sharing for Helldivers 2
 
-Helldiver's Hangar is an API designed for Helldivers 2 enthusiasts to share and manage their loadouts. Built with TypeScript, leveraging NestJS for backend structure, and TypeORM for ORM with a PostgreSQL database, this project aims for seamless integration and performance.
+Helldiver's Hangar is an API designed for Helldivers 2 enthusiasts to share and manage their loadouts. Built with
+TypeScript, leveraging NestJS for backend structure, and TypeORM for ORM with a PostgreSQL database, this project aims
+for seamless integration and performance.
 
 ## Table of Contents
 
@@ -56,6 +57,7 @@ After the first run, use the `populate-db.sql` file to populate the database wit
 Here are the available API endpoints:
 
 ### Loadouts
+
 - `POST /loadouts` - Create a new loadout
 - `GET /loadouts` - Retrieve all loadouts
 - `GET /loadouts/:uniqueId` - Retrieve a specific loadout by unique ID
@@ -63,6 +65,7 @@ Here are the available API endpoints:
 - `DELETE /loadouts/:id` - Delete a loadout by ID
 
 ### Firing Modes
+
 - `GET /firing-modes` - Retrieve all firing modes
 - `GET /firing-modes/:id` - Retrieve a specific firing mode by ID
 - `POST /firing-modes` - Create a new firing mode
@@ -70,6 +73,7 @@ Here are the available API endpoints:
 - `DELETE /firing-modes/:id` - Delete a firing mode by ID
 
 ### Throwables
+
 - `POST /throwables/image/:id` - Upload an image for a throwable
 - `POST /throwables` - Create a new throwable
 - `GET /throwables` - Retrieve all throwables
@@ -78,6 +82,7 @@ Here are the available API endpoints:
 - `DELETE /throwables/:id` - Delete a throwable by ID
 
 ### Traits
+
 - `POST /traits` - Create a new trait
 - `GET /traits` - Retrieve all traits
 - `GET /traits/:id` - Retrieve a specific trait by ID
@@ -85,6 +90,7 @@ Here are the available API endpoints:
 - `DELETE /traits/:id` - Delete a trait by ID
 
 ### Passives
+
 - `GET /passives` - Retrieve all passives
 - `GET /passives/:id` - Retrieve a specific passive by ID
 - `POST /passives` - Create a new passive
@@ -92,6 +98,7 @@ Here are the available API endpoints:
 - `DELETE /passives/:id` - Delete a passive by ID
 
 ### Primary Weapons
+
 - `POST /primary-weapon/image/:id` - Upload an image for a primary weapon
 - `POST /primary-weapon` - Create a new primary weapon
 - `GET /primary-weapon` - Retrieve all primary weapons
@@ -99,6 +106,7 @@ Here are the available API endpoints:
 - `PUT /primary-weapon/:id` - Update a primary weapon by ID
 
 ### Secondary Weapons
+
 - `POST /secondary-weapon/image/:id` - Upload an image for a secondary weapon
 - `POST /secondary-weapon` - Create a new secondary weapon
 - `GET /secondary-weapon` - Retrieve all secondary weapons
@@ -106,6 +114,7 @@ Here are the available API endpoints:
 - `PUT /secondary-weapon/:id` - Update a secondary weapon by ID
 
 ### Helmets
+
 - `POST /helmet/image/:id` - Upload an image for a helmet
 - `POST /helmet` - Create a new helmet
 - `GET /helmet` - Retrieve all helmets
@@ -113,6 +122,7 @@ Here are the available API endpoints:
 - `PUT /helmet/:id` - Update a helmet by ID
 
 ### Armors
+
 - `POST /armor/image/:id` - Upload an image for an armor
 - `POST /armor` - Create a new armor
 - `GET /armor` - Retrieve all armors
@@ -120,6 +130,7 @@ Here are the available API endpoints:
 - `PUT /armor/:id` - Update an armor by ID
 
 ### Capes
+
 - `POST /cape/image/:id` - Upload an image for a cape
 - `POST /cape` - Create a new cape
 - `GET /cape` - Retrieve all capes
@@ -127,6 +138,7 @@ Here are the available API endpoints:
 - `PUT /cape/:id` - Update a cape by ID
 
 ### Authentication
+
 - `POST /auth/signup` - Sign up a new user
 - `POST /auth/login` - Log in a user
 

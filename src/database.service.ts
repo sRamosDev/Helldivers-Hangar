@@ -5,6 +5,8 @@ import * as path from 'path';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
+  private readonly logger = new Logger(DatabaseService.name);
+
   constructor(private dataSource: DataSource) {}
 
   async onModuleInit() {
@@ -18,8 +20,6 @@ export class DatabaseService implements OnModuleInit {
       this.logger.log('Database is already populated');
     }
   }
-
-  private readonly logger = new Logger(DatabaseService.name);
 
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
