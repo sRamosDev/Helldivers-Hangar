@@ -1,7 +1,5 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Helmet } from '../helmet/helmet.entity';
-import { Cape } from '../cape/cape.entity';
-import { Armor } from '../armor/armor.entity';
+import { Gear } from '../gear/gear.entity';
 
 @Entity()
 export class Passive {
@@ -14,12 +12,6 @@ export class Passive {
   @Column()
   description: string;
 
-  @ManyToMany(() => Helmet, (helmet) => helmet.passive)
-  helmet: Helmet[];
-
-  @ManyToMany(() => Cape, (cape) => cape.passive)
-  cape: Cape[];
-
-  @ManyToMany(() => Armor, (armor) => armor.passive)
-  armor: Armor[];
+  @ManyToMany(() => Gear, (gear) => gear.passive)
+  gear: Gear[];
 }

@@ -9,9 +9,7 @@ import { ActivityLog } from './activity-log/activity-log.entity';
 
 import { LoadoutsModule } from './loadouts/loadouts.module';
 import { FiringModeModule } from './firingMode/firingMode.module';
-import { HelmetModule } from './helmet/helmet.module';
-import { ArmorModule } from './armor/armor.module';
-import { CapeModule } from './cape/cape.module';
+import { GearModule } from './gear/gear.module';
 import { WeaponModule } from './weapon/weapon.module';
 import { ThrowableModule } from './throwable/throwable.module';
 import { PassiveModule } from './passive/passive.module';
@@ -48,9 +46,7 @@ import { HealthModule } from './health/health.module';
     TraitModule,
     PassiveModule,
     WeaponModule,
-    HelmetModule,
-    ArmorModule,
-    CapeModule,
+    GearModule,
     TypeOrmModule.forFeature([ActivityLog]),
     AuthModule,
     HealthModule,

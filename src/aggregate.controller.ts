@@ -1,10 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { PrimaryWeaponService } from './primaryWeapon/primaryWeapon.service';
-import { SecondaryWeaponService } from './secondaryWeapon/secondaryWeapon.service';
+import { WeaponService } from './weapon/weapon.service';
 import { ThrowableService } from './throwable/throwable.service';
-import { HelmetService } from './helmet/helmet.service';
-import { ArmorService } from './armor/armor.service';
-import { CapeService } from './cape/cape.service';
+import { GearService } from './gear/gear.service';
 import { FiringModeService } from './firingMode/firingMode.service';
 import { TraitService } from './trait/trait.service';
 import { PassiveService } from './passive/passive.service';
@@ -12,12 +9,10 @@ import { PassiveService } from './passive/passive.service';
 @Controller('all')
 export class AggregateController {
   constructor(
-    private readonly primaryWeaponService: PrimaryWeaponService,
-    private readonly secondaryWeaponService: SecondaryWeaponService,
+    private readonly weaponService: WeaponService,
     private readonly throwableService: ThrowableService,
-    private readonly helmetService: HelmetService,
-    private readonly armorService: ArmorService,
-    private readonly capeService: CapeService,
+    private readonly gearService: GearService,
+
     private readonly firingModeService: FiringModeService,
     private readonly traitService: TraitService,
     private readonly passiveService: PassiveService,
@@ -25,23 +20,18 @@ export class AggregateController {
 
   @Get()
   async getAllData() {
-    const primaryWeapons = await this.primaryWeaponService.findAll();
-    const secondaryWeapons = await this.secondaryWeaponService.findAll();
+    const weapons = await this.weaponService.findAll();
     const throwables = await this.throwableService.findAll();
-    const helmets = await this.helmetService.findAll();
-    const armors = await this.armorService.findAll();
-    const capes = await this.capeService.findAll();
+    const gear = await this.gearService.findAll();
+
     const firingModes = await this.firingModeService.findAll();
     const traits = await this.traitService.findAll();
     const passives = await this.passiveService.findAll();
 
     return {
-      primaryWeapons,
-      secondaryWeapons,
+      weapons,
       throwables,
-      helmets,
-      armors,
-      capes,
+      gear,
       firingModes,
       traits,
       passives,

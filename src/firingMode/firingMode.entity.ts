@@ -1,6 +1,5 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { PrimaryWeapon } from '../primaryWeapon/primaryWeapon.entity';
-import { SecondaryWeapon } from '../secondaryWeapon/secondaryWeapon.entity';
+import { Weapon } from '../weapon/weapon.entity';
 
 @Entity()
 export class FiringMode {
@@ -10,9 +9,6 @@ export class FiringMode {
   @Column()
   name: string;
 
-  @ManyToMany(() => PrimaryWeapon, (weapon) => weapon.firing_modes)
-  primary_weapons: PrimaryWeapon[];
-
-  @ManyToMany(() => SecondaryWeapon, (weapon) => weapon.firing_modes)
-  secondary_weapons: SecondaryWeapon[];
+  @ManyToMany(() => Weapon, (weapon) => weapon.firing_modes)
+  primary_weapons: Weapon[];
 }

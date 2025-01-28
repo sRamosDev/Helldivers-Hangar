@@ -11,39 +11,41 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
-import { ArmorService } from './armor.service';
+import { GearService } from './gear.service';
 import { Express } from 'express';
 import { multerConfig, processImage } from '../utils/image-upload.util';
 import { unlink } from 'fs/promises';
+import { CreateGearDto } from './dto/createGear.dto';
+import { UpdateGearDto } from './dto/updateGear.dto';
 
-@Controller('armor')
-export class ArmorController {
-  constructor(private readonly armorService: ArmorService) {}
+@Controller('gear')
+export class GearController {
+  constructor(private readonly gearService: GearService) {}
 
   @Post('image/:id')
   @UseInterceptors(FileInterceptor('file', multerConfig))
-  async uploadArmorImage(
+  async uploadGearImage(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
   ) {
     if (!file) throw new BadRequestException('No file uploaded');
 
     try {
-      const armor = await this.armorService.findOne(+id);
-      if (!armor) {
+      const gear = await this.gearService.findOne(+id);
+      if (!gear) {
         await unlink(file.path).catch(() => {});
-        throw new BadRequestException('Armor not found');
+        throw new BadRequestException('Gear not found');
       }
 
       await processImage(file.path);
-      const newImageUrl = `images/armors/${file.filename.replace(/\.\w+$/, '.webp')}`;
+      const newImageUrl = `images/gears/${file.filename.replace(/\.\w+$/, '.webp')}`;
 
-      if (armor.image_url) {
-        const oldImagePath = join(process.cwd(), 'public', armor.image_url);
+      if (gear.image_url) {
+        const oldImagePath = join(process.cwd(), 'public', gear.image_url);
         await unlink(oldImagePath).catch(() => {});
       }
 
-      await this.armorService.updateImageUrl(+id, newImageUrl);
+      await this.gearService.updateImageUrl(+id, newImageUrl);
 
       return {
         success: true,
@@ -66,32 +68,24 @@ export class ArmorController {
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body()
-    armorData: {
-      name: string;
-      description: string;
-      type: string;
-      armor_rating: number;
-      speed: number;
-      stamina_regen: number;
-      passiveIds: number[];
-    },
+    gearData: CreateGearDto,
   ) {
     if (!file) throw new BadRequestException('No file uploaded');
 
     await processImage(file.path);
 
-    const imageUrl = `images/armors/${file.filename.replace(/\.\w+$/, '.webp')}`;
-    return this.armorService.create({ ...armorData, imageUrl });
+    const imageUrl = `images/gears/${file.filename.replace(/\.\w+$/, '.webp')}`;
+    return this.gearService.create({ ...gearData, imageUrl });
   }
 
   @Get()
   async findAll() {
-    return this.armorService.findAll();
+    return this.gearService.findAll();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.armorService.findOne(+id);
+    return this.gearService.findOne(+id);
   }
 
   @Put(':id')
@@ -100,27 +94,19 @@ export class ArmorController {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
     @Body()
-    armorData: {
-      name: string;
-      description: string;
-      type: string;
-      armor_rating: number;
-      speed: number;
-      stamina_regen: number;
-      passiveIds: number[];
-    },
+    gearData: UpdateGearDto,
   ) {
     let imageUrl: string;
 
     if (file) {
       await processImage(file.path);
-      imageUrl = `images/armors/${file.filename.replace(/\.\w+$/, '.webp')}`;
+      imageUrl = `images/gears/${file.filename.replace(/\.\w+$/, '.webp')}`;
       // Delete old image here if needed
     } else {
-      const helmet = await this.armorService.findOne(+id);
-      imageUrl = helmet.image_url;
+      const gear = await this.gearService.findOne(+id);
+      imageUrl = gear.image_url;
     }
 
-    return this.armorService.update(+id, { ...armorData, imageUrl });
+    return this.gearService.update(+id, { ...gearData, imageUrl });
   }
 }

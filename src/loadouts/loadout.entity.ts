@@ -1,9 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Helmet } from '../helmet/helmet.entity';
-import { Armor } from '../armor/armor.entity';
-import { Cape } from '../cape/cape.entity';
+
 import { Weapon } from '../weapon/weapon.entity';
 import { Throwable } from '../throwable/throwable.entity';
+import { Gear } from '../gear/gear.entity';
 
 @Entity()
 export class Loadout {
@@ -16,14 +15,14 @@ export class Loadout {
   @Column()
   name: string;
 
-  @ManyToOne(() => Helmet, (helmet) => helmet.loadouts)
-  helmet: Helmet;
+  @ManyToOne(() => Gear, (gear) => gear.loadouts_helmet)
+  helmet: Gear;
 
-  @ManyToOne(() => Armor, (armor) => armor.loadouts)
-  armor: Armor;
+  @ManyToOne(() => Gear, (gear) => gear.loadouts_armor)
+  armor: Gear;
 
-  @ManyToOne(() => Cape, (cape) => cape.loadouts)
-  cape: Cape;
+  @ManyToOne(() => Gear, (gear) => gear.loadouts_cape)
+  cape: Gear;
 
   @ManyToOne(() => Weapon, (weapon) => weapon.loadouts_primary)
   primary_weapon: Weapon;
