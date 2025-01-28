@@ -29,7 +29,8 @@ INSERT INTO public.trait VALUES (1, 'Medium Armor Penetrating'),
 (4, 'Beam'), (5, 'Explosive'),
 (6, 'Light Armor Penetrating'), (7, 'Chargeup'),
 (8, 'Incendiary'), (9, 'One Handed'),
-(10, 'Stimulative'),(11, 'Heat');
+(10, 'Stimulative'),(11, 'Heat'),
+(12, 'Stun');
 
 INSERT INTO public.gear VALUES (1, 'B-01 Tactical', 'This armor is the Super Earth Standard Issue, made from the same titanium alloy as the Destroyer''s hull.', 'Medium', 100, 500, 100, NULL, 'armor'),
 (2, 'B-08 Light Gunner', 'Compact and flexible, this kevlar armor adds minimal mass, making it a common choice for Helldiver fitness tests.', 'Medium', 100, 550, 125, NULL, 'armor'),
@@ -95,8 +96,8 @@ INSERT INTO public.gear VALUES (1, 'B-01 Tactical', 'This armor is the Super Ear
 (61, 'UF-50 Bloodhound', 'Users are advised not to scratch at the lacquer, as the Red 20,000 pigment that gives this armor its signature sheen may be correlated with rapid DNA unspooling.', 'Medium', 100, 500, 100, NULL, 'armor'),
 (63, 'UF-84 Doubt Killer', 'Developed by the Ministry of Science while investigating the phenomenon known as The Gloom, this armor is non-permeable and squeak resistant.', 'Medium', 100, 500, 100, NULL, 'armor'),
 (64, 'DP-00 Tactical', 'This classic armour set is recognised by every citizen: worn by the heroic Helldivers who battled and forever defeated the Terminids, Cyborgs, and the Illuminate in the First Galactic War', 'Medium', 100, 500, 100, NULL, 'armor'),
-(65, 'PH-56 Jaguar', '', 'Medium', 100, 500, 100, NULL, 'armor'),
-(66, 'CE-101 Guerilla Gorilla', '', 'Heavy', 150, 450, 50, NULL, 'armor');
+(65, 'PH-56 Jaguar', '"Prowl like a jaguar, strike like a viper.”—Motto of the storied SEAF special operations unit whose real exploits were portrayed in the classic comic book series “Tales of the Viper Commandos."', 'Medium', 100, 500, 100, NULL, 'armor'),
+(66, 'CE-101 Guerilla Gorilla', 'Heavily insulated from animal bites, enemy fire, and the histrionic diatribes of anarchists.', 'Heavy', 150, 450, 50, NULL, 'armor');
 
 INSERT INTO public.gear_has_passives VALUES (1, 4),
 (1, 7), (2, 7),
@@ -305,8 +306,8 @@ INSERT INTO public.gear VALUES (108,'B-01 Tactical', 'This armor is the Super Ea
 (213, 'UF-16 Inspector', 'Made famous by the "Truth Enforcers: Enforcers of Truth" mystery novels, this armor calls to mind those paragons of patriotism who protect us from treasonous lies.', 'Medium', 100, 100, 100, NULL, 'helmet'),
 (214, 'UF-84 Doubt Killer', 'Developed by the Ministry of Science while investigating the phenomenon known as The Gloom, this armor is non-permeable and squeak resistant.', 'Medium', 100, 100, 100, NULL, 'helmet'),
 (215, 'DP-00 Tactical', 'This classic armour set is recognised by every citizen: worn by the heroic Helldivers who battled and forever defeated the Terminids, Cyborgs, and the Illuminate in the First Galactic War', 'Medium', 100, 100, 100, NULL, 'helmet'),
-(216, 'PH-56 Jaguar', '', 'Medium', 100, 100, 100, NULL, 'helmet'),
-(217, 'CE-101 Guerilla Gorilla', '', 'Medium', 100, 100, 100, NULL, 'helmet');
+(216, 'PH-56 Jaguar', '"Prowl like a jaguar, strike like a viper.”—Motto of the storied SEAF special operations unit whose real exploits were portrayed in the classic comic book series “Tales of the Viper Commandos."', 'Medium', 100, 100, 100, NULL, 'helmet'),
+(217, 'CE-101 Guerilla Gorilla', 'Heavily insulated from animal bites, enemy fire, and the histrionic diatribes of anarchists.', 'Medium', 100, 100, 100, NULL, 'helmet');
 
 
 
@@ -457,14 +458,17 @@ INSERT INTO public.weapon_has_traits VALUES (1, 6),
 INSERT INTO public.weapon VALUES
 (31, 'P-2 Peacemaker', 'The SEAF standard pistol - offering a high fire rate, generous capacity, and fast reloading.', 'Pistol', 75, 15, 23, 900, NULL, 'secondary', 'Light'),
 (32, 'P-19 Redeemer', 'A fully-automatic pistol with an extremely high fire rate, allowing for efficient crowd control.', 'Pistol', 60, 31, 15, 1100, NULL, 'secondary', 'Light'),
-(33, 'P-4 Senator', 'A high-damage revolver, which can be reloaded with single rounds. A heavy-hitting and reliable sidearm.', 'Pistol', 200, 6, 43, 200, NULL, 'secondary', 'Light'),
+(33, 'P-4 Senator', 'A high-damage revolver, which can be reloaded with single rounds. A heavy-hitting and reliable sidearm.', 'Pistol', 200, 6, 43, 200, NULL, 'secondary', 'Heavy'),
 (34, 'LAS-7 Dagger', 'A laser pistol that fires a continuous beam. Does not require ammo but can overheat and need to change batteries.', 'Special', 250, 7, 0, 0, NULL, 'secondary', 'Light'),
-(35, 'GP-31 Grenade Pistol', 'A pistol that fires grenades. Must be reloaded between shots.', 'Special', 650, 1, 43, 900, NULL, 'secondary', 'Light'),
-(36, 'P-113 Verdict', 'The gas-operated, semiautomatic P-113 chambers the 14mm ''Rapid Deliberation,'' the largest centerfire cartridge of any magazine-fed pistol.', 'Pistol', 125, 10, 40, 450, NULL, 'secondary', 'Light'),
+(35, 'GP-31 Grenade Pistol', 'A pistol that fires grenades. Must be reloaded between shots.', 'Special', 650, 1, 43, 900, NULL, 'secondary', 'Heavy'),
+(36, 'P-113 Verdict', 'The gas-operated, semiautomatic P-113 chambers the 14mm ''Rapid Deliberation,'' the largest centerfire cartridge of any magazine-fed pistol.', 'Pistol', 125, 10, 40, 450, NULL, 'secondary', 'Medium'),
 (37, 'SG-22 Bushwhacker', 'A triple-barreled, break-action, sawed-off shotgun. Switch firing modes to fire all three barrels at once.', 'Special', 405, 3, 170, 650, NULL, 'secondary', 'Light'),
-(38, 'P-72 Crisper', 'A compact handgun-style flamethrower, able to project a jet of fire over short distances.', 'Special', 375, 30, 2, 0, NULL, 'secondary', 'Light'),
+(38, 'P-72 Crisper', 'A compact handgun-style flamethrower, able to project a jet of fire over short distances.', 'Special', 375, 30, 2, 0, NULL, 'secondary', 'Heavy'),
 (39, 'P-11 Stim Pistol', 'Fires a ballistic dart at near-supersonic speeds, allowing the user to stim allies from a distance. Might sting.', 'Special', 0, 6, 6, 70, NULL, 'secondary', 'Light'),
-(40, 'PLAS-15 Loyalist', 'A plasma pistol that charges each shot until the trigger is released. Plasma projectiles explode on impact.', 'Special', 125, 7, 8, 1000, NULL, 'secondary', 'Light');
+(40, 'PLAS-15 Loyalist', 'A plasma pistol that charges each shot until the trigger is released. Plasma projectiles explode on impact.', 'Special', 125, 7, 8, 1000, NULL, 'secondary', 'Medium'),
+(41, 'CQC-19 Stun Lance', 'A melee weapon tipped with electrified prongs that temporarily stun targets. Can be wielded one-handed.', 'Mele', 0, 0, 8, 0, NULL, 'secondary', 'Light'),
+(42, 'CQC-30 Stun Baton', 'A lightweight melee weapon that temporarily stuns enemies. Can be wielded one-handed.', 'Mele', 0, 0, 8, 0, NULL, 'secondary', 'Light');
+
 
 INSERT INTO public.weapon_has_firing_modes VALUES
 (31, 5), (32, 5),
@@ -487,7 +491,9 @@ INSERT INTO public.weapon_has_traits VALUES
 (38, 8), (39, 9),
 (39, 2), (39, 10),
 (40, 1), (40, 9),
-(40, 5), (40, 7);
+(40, 5), (40, 7),
+(41, 9), (41, 12),
+(42, 9), (42, 12);
 
 INSERT INTO public.throwable VALUES
 (1, 'G-12 High Explosive', 'A high explosive grenade which damages lightly armored targets. Creates high damage over a small area when detonated.', 800, 4, 7, 3.5, NULL),

@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { Gear } from './gear.entity';
 import { Passive } from '../passive/passive.entity';
 import { CreateGearDto } from './dto/createGear.dto';
-import { UpdateGearDto } from "./dto/updateGear.dto";
+import { UpdateGearDto } from './dto/updateGear.dto';
 
 @Injectable()
 export class GearService {

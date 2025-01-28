@@ -14,8 +14,8 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateLoadoutDto } from "./dto/CreateLoadout.dto";
-import { UpdateLoadoutDto } from "./dto/UpdateLoadout.dto";
+import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
+import { UpdateLoadoutDto } from './dto/UpdateLoadout.dto';
 
 @ApiTags('Loadouts')
 @Controller('loadouts')
