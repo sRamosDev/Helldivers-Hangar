@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -9,49 +10,59 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { v4 as uuidv4 } from 'uuid';
-import { extname } from 'path';
+import { join } from 'path';
 import { ArmorService } from './armor.service';
 import { Express } from 'express';
+import { multerConfig, processImage } from '../utils/image-upload.util';
+import { unlink } from 'fs/promises';
 
 @Controller('armor')
 export class ArmorController {
   constructor(private readonly armorService: ArmorService) {}
 
   @Post('image/:id')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: 'public/images/armors',
-        filename: (req, file, cb) => {
-          const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
-          cb(null, uniqueSuffix);
-        },
-      }),
-    }),
-  )
-  async uploadFile(
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async uploadArmorImage(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
   ) {
-    const imageUrl = `images/armors/${file.filename}`;
-    await this.armorService.updateImageUrl(id, imageUrl);
-    return { filename: file.filename };
+    if (!file) throw new BadRequestException('No file uploaded');
+
+    try {
+      const armor = await this.armorService.findOne(+id);
+      if (!armor) {
+        await unlink(file.path).catch(() => {});
+        throw new BadRequestException('Armor not found');
+      }
+
+      await processImage(file.path);
+      const newImageUrl = `images/armors/${file.filename.replace(/\.\w+$/, '.webp')}`;
+
+      if (armor.image_url) {
+        const oldImagePath = join(process.cwd(), 'public', armor.image_url);
+        await unlink(oldImagePath).catch(() => {});
+      }
+
+      await this.armorService.updateImageUrl(+id, newImageUrl);
+
+      return {
+        success: true,
+        imageUrl: newImageUrl,
+      };
+    } catch (error) {
+      await Promise.allSettled([
+        unlink(file.path).catch(() => {}),
+        unlink(file.path.replace(/\.\w+$/, '.webp')).catch(() => {}),
+      ]);
+
+      throw new BadRequestException(
+        error.message || 'Failed to process image upload',
+      );
+    }
   }
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: 'public/images/armors',
-        filename: (req, file, cb) => {
-          const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
-          cb(null, uniqueSuffix);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file', multerConfig))
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body()
@@ -65,7 +76,11 @@ export class ArmorController {
       passiveIds: number[];
     },
   ) {
-    const imageUrl = `images/armors/${file.filename}`;
+    if (!file) throw new BadRequestException('No file uploaded');
+
+    await processImage(file.path);
+
+    const imageUrl = `images/armors/${file.filename.replace(/\.\w+$/, '.webp')}`;
     return this.armorService.create({ ...armorData, imageUrl });
   }
 
@@ -80,6 +95,7 @@ export class ArmorController {
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
@@ -95,13 +111,16 @@ export class ArmorController {
     },
   ) {
     let imageUrl: string;
+
     if (file) {
-      imageUrl = `images/armors/${file.filename}`;
-      await this.armorService.updateImageUrl(+id, imageUrl);
+      await processImage(file.path);
+      imageUrl = `images/armors/${file.filename.replace(/\.\w+$/, '.webp')}`;
+      // Delete old image here if needed
     } else {
-      const armor = await this.armorService.findOne(+id);
-      imageUrl = armor.image_url;
+      const helmet = await this.armorService.findOne(+id);
+      imageUrl = helmet.image_url;
     }
+
     return this.armorService.update(+id, { ...armorData, imageUrl });
   }
 }
