@@ -12,8 +12,7 @@ import { FiringModeModule } from './firingMode/firingMode.module';
 import { HelmetModule } from './helmet/helmet.module';
 import { ArmorModule } from './armor/armor.module';
 import { CapeModule } from './cape/cape.module';
-import { PrimaryWeaponModule } from './primaryWeapon/primaryWeapon.module';
-import { SecondaryWeaponModule } from './secondaryWeapon/secondaryWeapon.module';
+import { WeaponModule } from './weapon/weapon.module';
 import { ThrowableModule } from './throwable/throwable.module';
 import { PassiveModule } from './passive/passive.module';
 import { TraitModule } from './trait/trait.module';
@@ -38,7 +37,7 @@ import { HealthModule } from './health/health.module';
           database: process.env.DB_NAME,
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           migrations: [__dirname + '/migrations/*{.ts,.js}'],
-          synchronize: false,
+          synchronize: process.env.DB_SYNCHRONIZE === 'true',
         };
         return dbConfig;
       },
@@ -48,8 +47,7 @@ import { HealthModule } from './health/health.module';
     ThrowableModule,
     TraitModule,
     PassiveModule,
-    PrimaryWeaponModule,
-    SecondaryWeaponModule,
+    WeaponModule,
     HelmetModule,
     ArmorModule,
     CapeModule,
