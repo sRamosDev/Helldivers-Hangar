@@ -7,10 +7,14 @@ import {
   Post,
   Put,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TraitService } from './trait.service';
 import { Trait } from './trait.entity';
+import { CreateTraitDto } from './dto/CreateTrait.dto';
+import { UpdateTraitDto } from './dto/UpdateTrait.dto';
 
 @Controller('traits')
 export class TraitController {
@@ -18,8 +22,9 @@ export class TraitController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() trait: Partial<Trait>): Promise<Trait> {
-    return this.traitService.create(trait);
+  @UsePipes(ValidationPipe)
+  create(@Body() createTraitDto: CreateTraitDto): Promise<Trait> {
+    return this.traitService.create(createTraitDto);
   }
 
   @Get()
@@ -34,11 +39,12 @@ export class TraitController {
 
   @UseGuards(AuthGuard('jwt'))
   @Put(':id')
+  @UsePipes(ValidationPipe)
   update(
     @Param('id') id: number,
-    @Body() trait: Partial<Trait>,
+    @Body() updateTraitDto: UpdateTraitDto,
   ): Promise<Trait> {
-    return this.traitService.update(id, trait);
+    return this.traitService.update(id, updateTraitDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
