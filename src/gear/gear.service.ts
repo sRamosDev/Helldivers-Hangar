@@ -47,11 +47,14 @@ export class GearService {
   }
 
   async findAll(): Promise<Gear[]> {
-    return this.gearRepository.find();
+    return this.gearRepository.find({ relations: ['passive'] });
   }
 
   async findOne(id: number): Promise<Gear> {
-    return this.gearRepository.findOne({ where: { id } });
+    return this.gearRepository.findOne({
+      where: { id },
+      relations: ['passive'],
+    });
   }
 
   async update(id: number, updateDto: UpdateGearDto): Promise<Gear> {

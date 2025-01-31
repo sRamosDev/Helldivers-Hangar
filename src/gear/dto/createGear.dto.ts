@@ -1,4 +1,11 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { GearCategory } from '../gear.entity';
 
 export class CreateGearDto {
   @IsString()
@@ -26,4 +33,7 @@ export class CreateGearDto {
   @IsArray()
   @IsNumber({}, { each: true })
   passiveIds: number[];
+
+  @IsEnum(GearCategory)
+  category: GearCategory;
 }
