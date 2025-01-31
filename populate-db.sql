@@ -1,4 +1,5 @@
-INSERT INTO public.passive VALUES (1, 'Advanced Filtration', 'Provides 80% resistance to gas damage and effects.'),
+INSERT INTO public.passive VALUES
+(1, 'Advanced Filtration', 'Provides 80% resistance to gas damage and effects.'),
 (2, 'Med-Kit', 'Increases initial inventory and holding capacity of stims by +2.
 Increases stim effect duration by 2.0s.'),
 (3, 'Scout', 'Markers placed on the map will generate radar scans every 2.0s.
@@ -19,12 +20,14 @@ Provides 50% resistance to explosive damage.'),
 (12, 'Electrical Conduit', 'Provides 95% resistance to arc damage.'),
 (13, 'Unflinching', 'Helps prevent Helldivers from flinching when hit.');
 
-INSERT INTO public.firing_mode VALUES (1, 'Bolt-Action'),
+INSERT INTO public.firing_mode VALUES
+(1, 'Bolt-Action'),
 (2, 'All Barrels'), (3, 'Pump Action'),
 (4, 'Automatic'), (5, 'Semi Automatic'),
 (6, 'Burst'), (7, 'Charge With Safety On');
 
-INSERT INTO public.trait VALUES (1, 'Medium Armor Penetrating'),
+INSERT INTO public.trait VALUES
+(1, 'Medium Armor Penetrating'),
 (2, 'Rounds Reload'), (3, 'Heavy Armor Penetrating'),
 (4, 'Beam'), (5, 'Explosive'),
 (6, 'Light Armor Penetrating'), (7, 'Chargeup'),
@@ -32,7 +35,8 @@ INSERT INTO public.trait VALUES (1, 'Medium Armor Penetrating'),
 (10, 'Stimulative'),(11, 'Heat'),
 (12, 'Stun');
 
-INSERT INTO public.gear VALUES (1, 'B-01 Tactical', 'This armor is the Super Earth Standard Issue, made from the same titanium alloy as the Destroyer''s hull.', 'Medium', 100, 500, 100, NULL, 'armor'),
+INSERT INTO public.gear VALUES
+(1, 'B-01 Tactical', 'This armor is the Super Earth Standard Issue, made from the same titanium alloy as the Destroyer''s hull.', 'Medium', 100, 500, 100, NULL, 'armor'),
 (2, 'B-08 Light Gunner', 'Compact and flexible, this kevlar armor adds minimal mass, making it a common choice for Helldiver fitness tests.', 'Medium', 100, 550, 125, NULL, 'armor'),
 (3, 'B-24 Enforcer', 'In field tests, 84% of users said that the armor improved their posture and self-esteem.', 'Medium', 100, 471, 71, NULL, 'armor'),
 (4, 'B-27 Fortified Commando', 'This armor set first appeared in the music video for the summer anthem ''Our Love is Like Liberty (Indestructible)''.', 'Heavy', 200, 450, 50, NULL, 'armor'),
@@ -99,7 +103,8 @@ INSERT INTO public.gear VALUES (1, 'B-01 Tactical', 'This armor is the Super Ear
 (65, 'PH-56 Jaguar', '"Prowl like a jaguar, strike like a viper.”—Motto of the storied SEAF special operations unit whose real exploits were portrayed in the classic comic book series “Tales of the Viper Commandos."', 'Medium', 100, 500, 100, NULL, 'armor'),
 (66, 'CE-101 Guerilla Gorilla', 'Heavily insulated from animal bites, enemy fire, and the histrionic diatribes of anarchists.', 'Heavy', 150, 450, 50, NULL, 'armor');
 
-INSERT INTO public.gear_has_passives VALUES (1, 4),
+INSERT INTO public.gear_has_passives VALUES
+(1, 4),
 (1, 7), (2, 7),
 (3, 11), (3, 2),
 (4, 7), (5, 8),
@@ -134,7 +139,8 @@ INSERT INTO public.gear_has_passives VALUES (1, 4),
 (63, 13), (64, 9),
 (65, 5), (66, 8);
 
-INSERT INTO public.gear VALUES (67,'Agent of Oblivion', '0.05% of profits are donated to Superstone National Park as part of the Ministry of Unity''s ''Greener Galaxy'' campaign.', 'Medium', 100, 100, 100, 'images/7993acf3-e6e4-455c-b91d-f65bdca3dbdf.png'),
+INSERT INTO public.gear VALUES
+(67,'Agent of Oblivion', '0.05% of profits are donated to Superstone National Park as part of the Ministry of Unity''s ''Greener Galaxy'' campaign.', 'Medium', 100, 100, 100, 'images/7993acf3-e6e4-455c-b91d-f65bdca3dbdf.png','cape'),
 (68,'Bastion of Integrity', 'A black, red and white cape with some type of war insignia enscribed on the back.', 'Medium', 100, 100, 100, NULL, 'cape'),
 (69,'Beacon of Mercy', 'The clasps on this cape are made from melted down Automaton housings—evidence of Democracy''s inevitable triumph.', 'Medium', 100, 100, 100, NULL, 'cape'),
 (70,'Blazing Samaritan', 'A white and green cape with red accents. Some type of war insignia is centered on the back.', 'Medium', 100, 100, 100, NULL, 'cape'),
@@ -176,7 +182,8 @@ INSERT INTO public.gear VALUES (67,'Agent of Oblivion', '0.05% of profits are do
 (106, 'Proof of Faultless Virtue', 'This cape signifies that its wearer thinks, feels, and acts correctly at all times, and thus bears the responsibility to educate and re-educate their fellow citizen.', 'Medium', 100, 100, 100, NULL, 'cape'),
 (107, 'Cover of Darkness', 'When children have trouble sleeping, tucking them in under this cape reminds them that they are never alone, for Liberty''s unseen defenders are always watching over them.', 'Medium', 100, 100, 100, NULL, 'cape');
 
-INSERT INTO public.gear_has_passives VALUES (67,4),
+INSERT INTO public.gear_has_passives VALUES
+(67,4),
 (68,4), (69,4),
 (70,4), (71,4),
 (72,4), (73,4),
@@ -198,7 +205,8 @@ INSERT INTO public.gear_has_passives VALUES (67,4),
 (104, 4), (105, 4),
 (106, 4), (107, 4);
 
-INSERT INTO public.gear VALUES (108,'B-01 Tactical', 'This armor is the Super Earth Standard Issue, made from the same titanium alloy as the Destroyer''s hull.', 'Medium', 100, 100, 100, NULL, 'helmet'),
+INSERT INTO public.gear VALUES
+(108,'B-01 Tactical', 'This armor is the Super Earth Standard Issue, made from the same titanium alloy as the Destroyer''s hull.', 'Medium', 100, 100, 100, NULL, 'helmet'),
 (109,'B-01 Tactical', 'This armor is the Super Earth Standard Issue, made from the same titanium alloy as the Destroyer''s hull.', 'Medium', 100, 100, 100, NULL, 'helmet'),
 (110,'B-01 Tactical', 'This armor is the Super Earth Standard Issue, made from the same titanium alloy as the Destroyer''s hull.', 'Medium', 100, 100, 100, NULL, 'helmet'),
 (111,'B-01 Tactical', 'This armor is the Super Earth Standard Issue, made from the same titanium alloy as the Destroyer''s hull.', 'Medium', 100, 100, 100, NULL, 'helmet'),
@@ -311,7 +319,8 @@ INSERT INTO public.gear VALUES (108,'B-01 Tactical', 'This armor is the Super Ea
 
 
 
-INSERT INTO public.gear_has_passives VALUES (108, 4),
+INSERT INTO public.gear_has_passives VALUES
+(108, 4),
 (109, 4), (110, 4),
 (111, 4), (112, 4),
 (113, 4), (114, 4),
@@ -400,7 +409,8 @@ INSERT INTO public.weapon VALUES
 (29, 'SMG-32 Reprimand', 'A heavy-duty submachine gun that fires large-caliber rounds, with a slower rate of fire to manage the high recoil. Ideal for use at close to medium range', 'SMG', 125, 25, 44, 490, NULL, 'primary', 'Light'),
 (30, 'R-2124 Constitution', 'This ceremonial rifle is modeled after antique relics from pre-Democratic times. It is traditionally gifted to every citizen upon turning 16 to encourage service.', 'Marksman Rifle', 180, 5, 15, 60, NULL, 'primary', 'Light');
 
-INSERT INTO public.weapon_has_firing_modes VALUES (1, 5),
+INSERT INTO public.weapon_has_firing_modes VALUES
+(1, 5),
 (1, 6), (1, 4),
 (2, 5), (2, 6),
 (2, 4), (3, 5),
@@ -428,7 +438,8 @@ INSERT INTO public.weapon_has_firing_modes VALUES (1, 5),
 (29, 5), (29, 6),
 (29, 4), (30, 1);
 
-INSERT INTO public.weapon_has_traits VALUES (1, 6),
+INSERT INTO public.weapon_has_traits VALUES
+(1, 6),
 (2, 1), (3, 6),
 (4, 6), (4, 2),
 (5, 1), (5, 5),
