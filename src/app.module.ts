@@ -35,6 +35,12 @@ import { HealthModule } from './health/health.module';
           database: process.env.DB_NAME,
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           migrations: [__dirname + '/migrations/*{.ts,.js}'],
+          ssl: true,
+          extra: {
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          },
           synchronize: process.env.DB_SYNCHRONIZE === 'true',
         };
         return dbConfig;
