@@ -17,13 +17,37 @@ import { multerConfig, processImage } from '../utils/image-upload.util';
 import { unlink } from 'fs/promises';
 import { CreateGearDto } from './dto/createGear.dto';
 import { UpdateGearDto } from './dto/updateGear.dto';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Gear')
 @Controller('gear')
 export class GearController {
   constructor(private readonly gearService: GearService) {}
 
   @Post('image/:id')
   @UseInterceptors(FileInterceptor('file', multerConfig))
+  @ApiOperation({
+    summary: 'Upload gear image',
+    description: 'Upload an image for a specific gear item',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'Gear ID', type: Number })
+  @ApiResponse({ status: 200, description: 'Image uploaded successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiBody({
+    description: 'Image file',
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
   async uploadGearImage(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
