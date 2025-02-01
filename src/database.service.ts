@@ -11,7 +11,7 @@ export class DatabaseService implements OnModuleInit {
   constructor(private dataSource: DataSource) {}
 
   async onModuleInit() {
-    await this.delay(5000);
+    await this.delay(1000);
     this.logger.log('DatabaseService has started');
     const isPopulated = await this.isDatabasePopulated();
     if (!isPopulated) {
@@ -45,20 +45,25 @@ export class DatabaseService implements OnModuleInit {
   }
 
   private askUserToPopulate(): Promise<boolean> {
-    return new Promise((resolve) => {
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      });
-      rl.question(
-        'Do you want to populate the database with demo data? (yes/no): ',
-        (answer) => {
-          rl.close();
-          resolve(
-            answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y',
-          );
-        },
-      );
-    });
+    return Promise.race([
+      new Promise<boolean>((resolve) => {
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+        rl.question(
+          'Do you want to populate the database with demo data? (yes/no): ',
+          (answer) => {
+            rl.close();
+            resolve(
+              answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y',
+            );
+          },
+        );
+      }),
+      new Promise<boolean>((resolve) =>
+        setTimeout(() => resolve(false), 30000),
+      ),
+    ]);
   }
 }
