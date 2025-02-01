@@ -10,6 +10,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Roles } from '../auth/roles.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { WeaponService } from './weapon.service';
@@ -31,18 +34,8 @@ export class WeaponController {
   constructor(private readonly weaponService: WeaponService) {}
 
   @Post('image/:id')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: 'public/images',
-        filename: (req, file, cb) => {
-          const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
-          cb(null, uniqueSuffix);
-        },
-      }),
-    }),
-  )
-  async uploadFile(
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
   @ApiOperation({
     summary: 'Upload weapon image',
@@ -99,17 +92,8 @@ export class WeaponController {
   }
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: 'public/images',
-        filename: (req, file, cb) => {
-          const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
-          cb(null, uniqueSuffix);
-        },
-      }),
-    }),
-  )
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
   async create(
     @UploadedFile() file: Express.Multer.File,
@@ -135,6 +119,8 @@ export class WeaponController {
   }
 
   @Put(':id')
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
   async update(
     @Param('id') id: string,
@@ -145,8 +131,6 @@ export class WeaponController {
     let imageUrl: string;
 
     if (file) {
-      imageUrl = `images/${file.filename}`;
-      await this.weaponService.updateImageUrl(+id, imageUrl);
       await processImage(file.path);
       imageUrl = `images/weapons/${file.filename.replace(/\.\w+$/, '.webp')}`;
     } else {

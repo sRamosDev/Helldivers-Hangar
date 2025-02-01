@@ -7,8 +7,12 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Roles } from '../auth/roles.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { GearService } from './gear.service';
@@ -26,12 +30,15 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+
 @ApiTags('Gear')
 @Controller('gear')
 export class GearController {
   constructor(private readonly gearService: GearService) {}
 
   @Post('image/:id')
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
   @ApiOperation({
     summary: 'Upload gear image',
@@ -88,6 +95,8 @@ export class GearController {
   }
 
   @Post()
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
   async create(
     @UploadedFile() file: Express.Multer.File,
@@ -113,6 +122,8 @@ export class GearController {
   }
 
   @Put(':id')
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
   async update(
     @Param('id') id: string,
@@ -125,7 +136,6 @@ export class GearController {
     if (file) {
       await processImage(file.path);
       imageUrl = `images/gears/${file.filename.replace(/\.\w+$/, '.webp')}`;
-      // Delete old image here if needed
     } else {
       const gear = await this.gearService.findOne(+id);
       imageUrl = gear.image_url;
