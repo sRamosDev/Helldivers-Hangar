@@ -45,7 +45,10 @@ export class WeaponService {
   }
 
   async findOne(id: number): Promise<Weapon> {
-    return this.weaponRepository.findOne({ where: { id } });
+    return this.weaponRepository.findOne({
+      where: { id },
+      relations: ['traits', 'firing_modes'],
+    });
   }
 
   async update(id: number, updateDto: UpdateWeaponDto): Promise<Weapon> {
