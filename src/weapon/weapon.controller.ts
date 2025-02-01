@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,16 +7,24 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { v4 as uuidv4 } from 'uuid';
-import { extname } from 'path';
+import { join } from 'path';
 import { WeaponService } from './weapon.service';
-import { Weapon } from './weapon.entity';
 import { Express } from 'express';
-import { DeepPartial } from 'typeorm';
+import { multerConfig, processImage } from '../utils/image-upload.util';
+import { unlink } from 'fs/promises';
+import { CreateWeaponDto } from './dto/createWeapon.dto';
+import { UpdateWeaponDto } from './dto/updateWeapon.dto';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 @Controller('weapon')
 export class WeaponController {
@@ -34,12 +43,59 @@ export class WeaponController {
     }),
   )
   async uploadFile(
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  @ApiOperation({
+    summary: 'Upload weapon image',
+    description: 'Upload an image for a specific weapon item',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'Weapon ID', type: Number })
+  @ApiResponse({ status: 200, description: 'Image uploaded successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiBody({
+    description: 'Image file',
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  async uploadWeaponImage(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
   ) {
-    const imageUrl = `images/${file.filename}`;
-    await this.weaponService.updateImageUrl(id, imageUrl);
-    return { filename: file.filename };
+    if (!file) throw new BadRequestException('No file uploaded');
+
+    try {
+      const weapon = await this.weaponService.findOne(+id);
+      if (!weapon) {
+        await unlink(file.path).catch(() => {});
+        throw new BadRequestException('Weapon not found');
+      }
+
+      await processImage(file.path);
+      const newImageUrl = `images/weapons/${file.filename.replace(/\.\w+$/, '.webp')}`;
+
+      if (weapon.image_url) {
+        const oldImagePath = join(process.cwd(), 'public', weapon.image_url);
+        await unlink(oldImagePath).catch(() => {});
+      }
+
+      await this.weaponService.updateImageUrl(+id, newImageUrl);
+
+      return {
+        success: true,
+        imageUrl: newImageUrl,
+      };
+    } catch (error) {
+      await Promise.allSettled([
+        unlink(file.path).catch(() => {}),
+        unlink(file.path.replace(/\.\w+$/, '.webp')).catch(() => {}),
+      ]);
+
+      throw new BadRequestException(
+        error.message || 'Failed to process image upload',
+      );
+    }
   }
 
   @Post()
@@ -54,22 +110,17 @@ export class WeaponController {
       }),
     }),
   )
+  @UseInterceptors(FileInterceptor('file', multerConfig))
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body()
-    weaponData: {
-      name: string;
-      description: string;
-      category: DeepPartial<Weapon['category']>;
-      type: string;
-      damage: number;
-      capacity: number;
-      recoil: number;
-      fireRate: number;
-      maxPenetration: DeepPartial<Weapon['max_penetration']>;
-    },
+    weaponData: CreateWeaponDto,
   ) {
-    const imageUrl = `images/${file.filename}`;
+    if (!file) throw new BadRequestException('No file uploaded');
+
+    await processImage(file.path);
+
+    const imageUrl = `images/weapons/${file.filename.replace(/\.\w+$/, '.webp')}`;
     return this.weaponService.create({ ...weaponData, imageUrl });
   }
 
@@ -84,33 +135,24 @@ export class WeaponController {
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
     @Body()
-    weaponData: {
-      name: string;
-      description: string;
-      category: DeepPartial<Weapon['category']>;
-      type: string;
-      damage: number;
-      capacity: number;
-      recoil: number;
-      fireRate: number;
-      maxPenetration: DeepPartial<Weapon['max_penetration']>;
-    },
+    weaponData: UpdateWeaponDto,
   ) {
     let imageUrl: string;
+
     if (file) {
       imageUrl = `images/${file.filename}`;
       await this.weaponService.updateImageUrl(+id, imageUrl);
+      await processImage(file.path);
+      imageUrl = `images/weapons/${file.filename.replace(/\.\w+$/, '.webp')}`;
     } else {
       const weapon = await this.weaponService.findOne(+id);
       imageUrl = weapon.image_url;
     }
-    return this.weaponService.update(+id, {
-      ...weaponData,
-      imageUrl,
-    });
+    return this.weaponService.update(+id, { ...weaponData, imageUrl });
   }
 }
