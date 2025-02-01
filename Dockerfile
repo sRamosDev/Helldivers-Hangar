@@ -1,5 +1,5 @@
 FROM node:20-alpine AS build
-LABEL authors="sebar"
+LABEL authors="sRamosDev"
 
 WORKDIR /usr/src/app
 
@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:20-alpine
+FROM node:20-alpine AS prod
 
 WORKDIR /usr/src/app
 

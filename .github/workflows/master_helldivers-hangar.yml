@@ -7,6 +7,17 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'README.md'
+      - 'API.md'
+      - '.github/**'
+      - 'public/**'
+      - '.dockerignore'
+      - '.env.sample'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - 'populate-db.sql'
+      - '.gitignore'
   workflow_dispatch:
 
 jobs:
@@ -21,7 +32,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
+          node-version: '20.17.0'
 
       - name: npm install and build
         run: |
