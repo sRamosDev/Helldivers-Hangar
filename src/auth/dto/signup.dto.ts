@@ -16,5 +16,5 @@ export class SignUpDto {
 
   @IsNotEmpty()
   @IsString()
-  role: string; // Add this line
+  role: string;
 }

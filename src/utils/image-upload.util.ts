@@ -7,10 +7,10 @@ import { BadRequestException } from '@nestjs/common';
 import { unlink } from 'fs/promises';
 
 // Configurable constants
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
-const UPLOAD_DIR = join(__dirname, '../../public/images'); // Absolute path
+const UPLOAD_DIR = join(__dirname, '../../public/images');
 const PROCESSED_WIDTH = 500;
 const WEBP_QUALITY = 80;
 
@@ -53,9 +53,8 @@ export async function processImage(filePath: string): Promise<void> {
   try {
     await sharp(filePath)
       .resize(PROCESSED_WIDTH, null, {
-        // Maintain aspect ratio
         fit: sharp.fit.inside,
-        withoutEnlargement: true, // Don't enlarge smaller images
+        withoutEnlargement: true,
       })
       .webp({
         quality: WEBP_QUALITY,
@@ -63,10 +62,8 @@ export async function processImage(filePath: string): Promise<void> {
       })
       .toFile(outputFilePath);
 
-    // Delete original file after successful processing
     await unlink(filePath);
   } catch (error) {
-    // Clean up both files if conversion failed
     await Promise.allSettled([
       unlink(filePath).catch(() => {}),
       unlink(outputFilePath).catch(() => {}),
