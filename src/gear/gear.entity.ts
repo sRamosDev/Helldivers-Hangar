@@ -44,7 +44,7 @@ export class Gear {
   @Column({
     type: 'enum',
     enum: GearCategory,
-    default: GearCategory.ARMOR, // Default to armor
+    default: GearCategory.ARMOR,
   })
   category: GearCategory;
 

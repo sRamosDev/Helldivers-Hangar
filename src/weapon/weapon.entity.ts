@@ -10,7 +10,7 @@ import { Trait } from '../trait/trait.entity';
 import { FiringMode } from '../firingMode/firingMode.entity';
 import { Loadout } from '../loadouts/loadout.entity';
 
-enum ArmorPenetration {
+export enum ArmorPenetration {
   Light = 'Light',
   Medium = 'Medium',
   Heavy = 'Heavy',
@@ -53,7 +53,7 @@ export class Weapon {
   @Column({
     type: 'enum',
     enum: WeaponCategory,
-    default: WeaponCategory.PRIMARY, // Default to primary weapon
+    default: WeaponCategory.PRIMARY,
   })
   category: WeaponCategory;
 

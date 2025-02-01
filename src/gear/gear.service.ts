@@ -22,7 +22,6 @@ export class GearService {
   private async verifyGearExists(id: number): Promise<Gear> {
     const gear = await this.gearRepository.findOne({
       where: { id },
-      relations: ['passive'],
     });
     if (!gear) {
       throw new NotFoundException(`Gear with ID ${id} not found`);
