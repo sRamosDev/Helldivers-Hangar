@@ -13,7 +13,13 @@ import { Loadout } from './loadout.entity';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
 import { UpdateLoadoutDto } from './dto/UpdateLoadout.dto';
 
@@ -23,33 +29,63 @@ export class LoadoutsController {
   constructor(private readonly loadoutsService: LoadoutsService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new loadout' })
+  @ApiOperation({
+    summary: 'Create a new loadout',
+    description: 'Creates a new loadout with the provided data.',
+  })
   @ApiResponse({
     status: 201,
     description: 'The loadout has been successfully created.',
+    type: Loadout,
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad Request.',
+  @ApiResponse({ status: 400, description: 'Bad Request. Invalid input data.' })
+  @ApiBody({
+    description: 'Payload for creating a new loadout',
+    type: CreateLoadoutDto,
+    examples: {
+      example1: {
+        summary: 'Basic loadout example',
+        value: {
+          name: 'Stealth Loadout',
+          helmetId: 1,
+          armorId: 2,
+          capeId: 3,
+          primaryWeaponId: 4,
+          secondaryWeaponId: 36,
+          throwableId: 6,
+        },
+      },
+    },
   })
-  async create(
-    @Body()
-    loadoutData: CreateLoadoutDto,
-  ) {
+  async create(@Body() loadoutData: CreateLoadoutDto): Promise<Loadout> {
     return this.loadoutsService.create(loadoutData);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Retrieve all loadouts' })
-  @ApiResponse({ status: 200, description: 'Returns all loadouts' })
+  @ApiOperation({
+    summary: 'Retrieve all loadouts',
+    description: 'Returns a list of all available loadouts.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all loadouts.',
+    type: [Loadout],
+  })
   async findAll(): Promise<Loadout[]> {
     return this.loadoutsService.findAll();
   }
 
   @Get(':uniqueId')
-  @ApiOperation({ summary: 'Retrieve a loadout by unique ID' })
-  @ApiResponse({ status: 200, description: 'Returns the loadout' })
-  @ApiResponse({ status: 404, description: 'Loadout not found' })
+  @ApiOperation({
+    summary: 'Retrieve a loadout by unique ID',
+    description: 'Fetches a specific loadout using its unique ID.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the loadout.',
+    type: Loadout,
+  })
+  @ApiResponse({ status: 404, description: 'Loadout not found.' })
   async findOne(@Param('uniqueId') uniqueId: string): Promise<Loadout> {
     return this.loadoutsService.findOne(uniqueId);
   }
@@ -57,28 +93,50 @@ export class LoadoutsController {
   @Put(':id')
   @Roles('admin')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiOperation({ summary: 'Update a loadout by ID' })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Update a loadout by ID',
+    description: 'Allows admins to update a specific loadout.',
+  })
   @ApiResponse({
     status: 200,
     description: 'The loadout has been successfully updated.',
+    type: Loadout,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Loadout not found' })
+  @ApiResponse({ status: 400, description: 'Bad Request. Invalid input data.' })
+  @ApiResponse({ status: 404, description: 'Loadout not found.' })
+  @ApiBody({
+    description: 'Payload for updating a loadout',
+    type: UpdateLoadoutDto,
+    examples: {
+      example1: {
+        summary: 'Update loadout name',
+        value: {
+          name: 'Tactical Assault Loadout',
+        },
+      },
+    },
+  })
   async update(
     @Param('id') id: string,
-    @Body()
-    loadoutData: UpdateLoadoutDto,
-  ) {
+    @Body() loadoutData: UpdateLoadoutDto,
+  ): Promise<Loadout> {
     return this.loadoutsService.update(+id, loadoutData);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a loadout by ID' })
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Delete a loadout by ID',
+    description: 'Allows admins to delete a specific loadout.',
+  })
   @ApiResponse({
     status: 200,
     description: 'The loadout has been successfully deleted.',
   })
-  @ApiResponse({ status: 404, description: 'Loadout not found' })
+  @ApiResponse({ status: 404, description: 'Loadout not found.' })
   async remove(@Param('id') id: string): Promise<void> {
     return this.loadoutsService.remove(+id);
   }

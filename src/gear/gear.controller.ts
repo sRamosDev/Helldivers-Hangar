@@ -30,7 +30,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-
 @ApiTags('Gear')
 @Controller('gear')
 export class GearController {
@@ -65,6 +64,7 @@ export class GearController {
       const gear = await this.gearService.findOne(+id);
       if (!gear) {
         await unlink(file.path).catch(() => {});
+        // noinspection ExceptionCaughtLocallyJS
         throw new BadRequestException('Gear not found');
       }
 
@@ -98,6 +98,13 @@ export class GearController {
   @Roles('admin')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
+  @ApiOperation({ summary: 'Create a new gear item' })
+  @ApiResponse({
+    status: 201,
+    description: 'The gear item has been successfully created.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiBody({ type: CreateGearDto })
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body()
@@ -112,11 +119,17 @@ export class GearController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Retrieve all gear items' })
+  @ApiResponse({ status: 200, description: 'Returns all gear items' })
   async findAll() {
     return this.gearService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Retrieve a gear item by ID' })
+  @ApiParam({ name: 'id', description: 'Gear ID', type: Number })
+  @ApiResponse({ status: 200, description: 'Returns the gear item' })
+  @ApiResponse({ status: 404, description: 'Gear item not found' })
   async findOne(@Param('id') id: string) {
     return this.gearService.findOne(+id);
   }
@@ -125,6 +138,15 @@ export class GearController {
   @Roles('admin')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
+  @ApiOperation({ summary: 'Update a gear item by ID' })
+  @ApiParam({ name: 'id', description: 'Gear ID', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'The gear item has been successfully updated.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Gear item not found' })
+  @ApiBody({ type: UpdateGearDto })
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
