@@ -5,10 +5,11 @@ import { Weapon } from './weapon.entity';
 import { Trait } from '../trait/trait.entity';
 import { FiringMode } from '../firingMode/firingMode.entity';
 import { AuthModule } from '../auth/auth.module';
+import { WeaponController } from './weapon.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Weapon, Trait, FiringMode]), AuthModule],
+  controllers: [WeaponController],
   providers: [WeaponService],
-  exports: [WeaponService],
 })
 export class WeaponModule {}
