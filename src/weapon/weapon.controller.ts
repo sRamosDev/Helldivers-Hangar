@@ -71,7 +71,10 @@ export class WeaponController {
   ) {
     try {
       const weapon = await this.weaponService.findOne(+id);
-      if (!weapon) throw new BadRequestException('Weapon not found');
+      if (!weapon) {
+        // noinspection ExceptionCaughtLocallyJS
+        throw new BadRequestException('Weapon not found');
+      }
 
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;

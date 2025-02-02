@@ -71,7 +71,10 @@ export class GearController {
   ) {
     try {
       const gear = await this.gearService.findOne(+id);
-      if (!gear) throw new BadRequestException('Gear not found');
+      if (!gear) {
+        // noinspection ExceptionCaughtLocallyJS
+        throw new BadRequestException('Gear not found');
+      }
 
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
