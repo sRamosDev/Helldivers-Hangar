@@ -13,16 +13,18 @@ services:
       TZ: ${TZ}
       PGTZ: ${TZ}
     volumes:
-      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+      - hh-postgres:/var/lib/postgresql/data
     env_file:
       - .env
     ports:
       - ${DB_PORT}:5432
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}" ]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - helldivershangar-network
 
   helldivershangar-api:
     container_name: helldivershangar-api
@@ -31,9 +33,10 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - "3000:3000"
     depends_on:
-      - helldivershangar-database
+      helldivershangar-database:
+        condition: service_healthy
     env_file:
       - .env
     healthcheck:
@@ -41,30 +44,39 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - helldivershangar-network
 
-#  helldivershangar-database-backup:
-#    container_name: hdl-database-backup
-#    image: prodrigestivill/postgres-backup-local
-#    restart: always
-#    #       user: postgres:postgres # Optional: see below
-#    volumes:
-#      - ${DB_BACKUP_LOCATION}:/backups
-#    links:
-#      - helldivershangar-database
-#    depends_on:
-#      - helldivershangar-database
-#    env_file:
-#      - .env
-#    environment:
-#      - POSTGRES_HOST=hdl-database
-#      - POSTGRES_DB=${DB_NAME}
-#      - POSTGRES_USER=${DB_USERNAME}
-#      - POSTGRES_PASSWORD=${DB_PASSWORD}
-#      - POSTGRES_EXTRA_OPTS=-Z1 --schema=public --blobs
-#      - SCHEDULE=@daily
-#      - BACKUP_ON_START=TRUE
-#      - BACKUP_KEEP_DAYS=7
-#      - BACKUP_KEEP_WEEKS=4
-#      - BACKUP_KEEP_MONTHS=6
-#      - HEALTHCHECK_PORT=8080
-#      - TZ=${TZ}
+  helldivershangar-database-backup:
+    container_name: helldivershangar-database-backup
+    image: prodrigestivill/postgres-backup-local
+    restart: always
+    volumes:
+      - hh-pgbackups:/backups
+    depends_on:
+      - helldivershangar-database
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=helldivershangar-database  # Match service name
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_EXTRA_OPTS=-Z1 --schema=public --blobs
+      - SCHEDULE=@daily
+      - BACKUP_ON_START=TRUE
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+      - HEALTHCHECK_PORT=8080
+      - TZ=${TZ}
+    networks:
+      - helldivershangar-network
+
+volumes:
+  hh-postgres:
+  hh-pgbackups:
+
+networks:
+  helldivershangar-network:
+    driver: bridge
