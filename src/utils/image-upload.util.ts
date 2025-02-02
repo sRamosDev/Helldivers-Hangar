@@ -1,28 +1,17 @@
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { memoryStorage } from 'multer';
+import { extname } from 'path';
 import * as sharp from 'sharp';
-import { v4 as uuidv4 } from 'uuid';
 import { Request } from 'express';
 import { BadRequestException } from '@nestjs/common';
-import { unlink } from 'fs/promises';
 
-// Configurable constants
-const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
-const UPLOAD_DIR = join(__dirname, '../../public/images');
 const PROCESSED_WIDTH = 500;
 const WEBP_QUALITY = 80;
 
 export const multerConfig = {
-  storage: diskStorage({
-    destination: UPLOAD_DIR,
-    filename: (req: Request, file, cb) => {
-      const fileExt = extname(file.originalname).toLowerCase();
-      const uniqueName = `${uuidv4()}${fileExt}`;
-      cb(null, uniqueName);
-    },
-  }),
+  storage: memoryStorage(),
   fileFilter: (req: Request, file, cb) => {
     const fileExt = extname(file.originalname).toLowerCase();
 
@@ -47,11 +36,9 @@ export const multerConfig = {
   },
 };
 
-export async function processImage(filePath: string): Promise<void> {
-  const outputFilePath = filePath.replace(/\.\w+$/, '.webp');
-
+export async function processImage(buffer: Buffer): Promise<Buffer> {
   try {
-    await sharp(filePath)
+    const processedBuffer = await sharp(buffer)
       .resize(PROCESSED_WIDTH, null, {
         fit: sharp.fit.inside,
         withoutEnlargement: true,
@@ -60,14 +47,11 @@ export async function processImage(filePath: string): Promise<void> {
         quality: WEBP_QUALITY,
         lossless: false,
       })
-      .toFile(outputFilePath);
+      .toBuffer();
 
-    await unlink(filePath);
+    console.log('Image processed successfully');
+    return processedBuffer;
   } catch (error) {
-    await Promise.allSettled([
-      unlink(filePath).catch(() => {}),
-      unlink(outputFilePath).catch(() => {}),
-    ]);
-    throw new BadRequestException('Error processing image');
+    throw new BadRequestException(error.message || 'Error processing image');
   }
 }

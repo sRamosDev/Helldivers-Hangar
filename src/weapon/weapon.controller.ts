@@ -14,13 +14,12 @@ import { Roles } from '../auth/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { join } from 'path';
 import { WeaponService } from './weapon.service';
 import { Express } from 'express';
 import { multerConfig, processImage } from '../utils/image-upload.util';
-import { unlink } from 'fs/promises';
 import { CreateWeaponDto } from './dto/createWeapon.dto';
 import { UpdateWeaponDto } from './dto/updateWeapon.dto';
+import { v4 as uuidv4 } from 'uuid';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -30,14 +29,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
 
-@ApiBearerAuth()
 @ApiTags('weapon')
 @Controller('weapon')
 export class WeaponController {
   constructor(private readonly weaponService: WeaponService) {}
 
   @Post('image/:id')
+  @ApiBearerAuth()
   @Roles('admin')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
@@ -69,43 +69,28 @@ export class WeaponController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
   ) {
-    if (!file) throw new BadRequestException('No file uploaded');
-
     try {
       const weapon = await this.weaponService.findOne(+id);
-      if (!weapon) {
-        await unlink(file.path).catch(() => {});
-        // noinspection ExceptionCaughtLocallyJS
-        throw new BadRequestException('Weapon not found');
-      }
+      if (!weapon) throw new BadRequestException('Weapon not found');
 
-      await processImage(file.path);
-      const newImageUrl = `images/weapons/${file.filename.replace(/\.\w+$/, '.webp')}`;
+      const processedBuffer = await processImage(file.buffer);
+      const uniqueName = `${uuidv4()}.webp`;
+      const imageUrl = await uploadToAzure(uniqueName, processedBuffer);
 
       if (weapon.image_url) {
-        const oldImagePath = join(process.cwd(), 'public', weapon.image_url);
-        await unlink(oldImagePath).catch(() => {});
+        await deleteFromAzure(weapon.image_url);
       }
 
-      await this.weaponService.updateImageUrl(+id, newImageUrl);
+      await this.weaponService.updateImageUrl(+id, imageUrl);
 
-      return {
-        success: true,
-        imageUrl: newImageUrl,
-      };
+      return { success: true, imageUrl };
     } catch (error) {
-      await Promise.allSettled([
-        unlink(file.path).catch(() => {}),
-        unlink(file.path.replace(/\.\w+$/, '.webp')).catch(() => {}),
-      ]);
-
-      throw new BadRequestException(
-        error.message || 'Failed to process image upload',
-      );
+      throw new BadRequestException(error.message || 'Image upload failed');
     }
   }
 
   @Post()
+  @ApiBearerAuth()
   @Roles('admin')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
@@ -192,11 +177,11 @@ export class WeaponController {
     @UploadedFile() file: Express.Multer.File,
     @Body() weaponData: CreateWeaponDto,
   ) {
-    if (!file) throw new BadRequestException('No file uploaded');
-
-    await processImage(file.path);
-
-    const imageUrl = `images/weapons/${file.filename.replace(/\.\w+$/, '.webp')}`;
+    let imageUrl = '';
+    if (file) {
+      const processedBuffer = await processImage(file.buffer);
+      imageUrl = await uploadToAzure(file.filename, processedBuffer);
+    }
     return this.weaponService.create({ ...weaponData, imageUrl });
   }
 
@@ -231,6 +216,7 @@ export class WeaponController {
   }
 
   @Put(':id')
+  @ApiBearerAuth()
   @Roles('admin')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(FileInterceptor('file', multerConfig))
@@ -303,12 +289,16 @@ export class WeaponController {
     let imageUrl: string;
 
     if (file) {
-      await processImage(file.path);
-      imageUrl = `images/weapons/${file.filename.replace(/\.\w+$/, '.webp')}`;
+      const processedBuffer = await processImage(file.buffer);
+      const uniqueName = `${uuidv4()}.webp`;
+      imageUrl = await uploadToAzure(uniqueName, processedBuffer);
+      const weapon = await this.weaponService.findOne(+id);
+      if (weapon?.image_url) await deleteFromAzure(weapon.image_url);
     } else {
       const weapon = await this.weaponService.findOne(+id);
       imageUrl = weapon.image_url;
     }
+
     return this.weaponService.update(+id, { ...weaponData, imageUrl });
   }
 }
