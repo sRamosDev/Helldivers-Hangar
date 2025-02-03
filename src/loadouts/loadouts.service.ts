@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Loadout } from './loadout.entity';
 import { randomBytes } from 'crypto';
+import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
+import { User } from '../users/users.entity';
 
 @Injectable()
 export class LoadoutsService {
@@ -11,7 +13,7 @@ export class LoadoutsService {
     private loadoutsRepository: Repository<Loadout>,
   ) {}
 
-  async create(loadoutData: any): Promise<Loadout> {
+  async create(loadoutData: CreateLoadoutDto, user: User): Promise<Loadout> {
     const {
       name,
       helmetId,
@@ -33,6 +35,7 @@ export class LoadoutsService {
       primary_weapon: { id: primaryWeaponId },
       secondary_weapon: { id: secondaryWeaponId },
       throwable: { id: throwableId },
+      createdBy: user,
     });
 
     return this.loadoutsRepository.save(loadout);

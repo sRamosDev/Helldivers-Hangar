@@ -4,6 +4,9 @@ services:
   helldivershangar-database:
     container_name: helldivershangar-database
     image: postgres
+    build:
+      context: .
+      dockerfile: postgres-build/postgres.Dockerfile
     restart: always
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -13,7 +16,11 @@ services:
       TZ: ${TZ}
       PGTZ: ${TZ}
     volumes:
-      - hh-postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
+    command: |-
+      -c ssl=on
+      -c ssl_cert_file=/var/lib/postgresql/server.crt
+      -c ssl_key_file=/var/lib/postgresql/server.key
     env_file:
       - .env
     ports:
@@ -52,7 +59,7 @@ services:
     image: prodrigestivill/postgres-backup-local
     restart: always
     volumes:
-      - hh-pgbackups:/backups
+      - pgbackups:/backups
     depends_on:
       - helldivershangar-database
     env_file:
@@ -74,8 +81,8 @@ services:
       - helldivershangar-network
 
 volumes:
-  hh-postgres:
-  hh-pgbackups:
+  postgres:
+  pgbackups:
 
 networks:
   helldivershangar-network:

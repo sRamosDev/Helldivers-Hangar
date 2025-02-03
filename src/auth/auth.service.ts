@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -22,57 +23,59 @@ export class AuthService {
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
-    const { name, email, password } = signUpDto;
+    const { displayName, username, email, password } = signUpDto;
 
+    // Check for existing email OR username
     const existingUser = await this.usersRepository.findOne({
-      where: { email },
+      where: [{ email }, { username }],
     });
 
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException('Email or username already exists');
+    }
+    if (password.length > 72) {
+      throw new BadRequestException('Password must be less than 72 characters');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
     const userCount = await this.usersRepository.count();
     const role = userCount === 0 ? 'admin' : 'user';
 
     const user = this.usersRepository.create({
-      name,
+      displayName,
+      username,
       email,
       password: hashedPassword,
       role,
     });
 
     await this.usersRepository.save(user);
-
     const token = this.jwtService.sign({ id: user.id, role: user.role });
 
-    await this.usersRepository.save(user);
-
-    await this.activityLogService.logAction(user.id, 'User signed up');
     return { token };
   }
 
   async login(loginDto: LoginDto): Promise<{ token: string }> {
-    const { email, password } = loginDto;
+    const { usernameOrEmail, password } = loginDto;
 
-    const user = await this.usersRepository.findOne({ where: { email } });
+    const user = await this.usersRepository.findOne({
+      where: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
+    });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (password.length > 72) {
+      throw new BadRequestException('Password must be less than 72 characters');
     }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
-
     if (!isPasswordMatched) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const token = this.jwtService.sign({ id: user.id, role: user.role });
-
-    await this.usersRepository.save(user);
-
-    await this.activityLogService.logAction(user.id, 'User logged in');
     return { token };
   }
 }

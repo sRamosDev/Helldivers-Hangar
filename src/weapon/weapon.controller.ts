@@ -6,20 +6,11 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Roles } from '../auth/roles.decorator';
-import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from '../auth/roles.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { WeaponService } from './weapon.service';
-import { Express } from 'express';
-import { multerConfig, processImage } from '../utils/image-upload.util';
-import { CreateWeaponDto } from './dto/createWeapon.dto';
-import { UpdateWeaponDto } from './dto/updateWeapon.dto';
-import { v4 as uuidv4 } from 'uuid';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -29,6 +20,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { v4 as uuidv4 } from 'uuid';
+import { Roles } from '../auth/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { RolesGuard } from '../auth/roles.guard';
+import { WeaponService } from './weapon.service';
+import { Express } from 'express';
+import { multerConfig, processImage } from '../utils/image-upload.util';
+import { CreateWeaponDto } from './dto/createWeapon.dto';
+import { UpdateWeaponDto } from './dto/updateWeapon.dto';
 import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
 
 @ApiTags('weapon')
@@ -197,8 +198,11 @@ export class WeaponController {
     status: 200,
     description: 'Weapons retrieved successfully',
   })
-  async findAll() {
-    return this.weaponService.findAll();
+  async findAll(
+    @Query('page') page?: number,
+    @Query('search') search?: string,
+  ) {
+    return this.weaponService.findAll(page, search);
   }
 
   @Get(':id')

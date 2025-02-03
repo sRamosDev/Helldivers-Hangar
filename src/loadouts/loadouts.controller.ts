@@ -2,12 +2,15 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
   Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
+//import { Request } from 'express';
 import { LoadoutsService } from './loadouts.service';
 import { Loadout } from './loadout.entity';
 import { Roles } from '../auth/roles.decorator';
@@ -22,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
 import { UpdateLoadoutDto } from './dto/UpdateLoadout.dto';
+import { User } from '../users/users.entity';
 
 @ApiTags('Loadouts')
 @Controller('loadouts')
@@ -57,8 +61,12 @@ export class LoadoutsController {
       },
     },
   })
-  async create(@Body() loadoutData: CreateLoadoutDto): Promise<Loadout> {
-    return this.loadoutsService.create(loadoutData);
+  async create(
+    @Body() loadoutData: CreateLoadoutDto,
+    @Request() req,
+  ): Promise<Loadout> {
+    const user: User = req.user;
+    return this.loadoutsService.create(loadoutData, user);
   }
 
   @Get()
@@ -120,7 +128,15 @@ export class LoadoutsController {
   async update(
     @Param('id') id: string,
     @Body() loadoutData: UpdateLoadoutDto,
+    @Request() req,
   ): Promise<Loadout> {
+    const user: User = req.user; // Corrected from req.username
+    const loadout = await this.loadoutsService.findOne(id);
+    if (loadout.createdBy?.id !== user.id && user.role !== 'admin') {
+      throw new ForbiddenException(
+        'You do not have permission to update this loadout',
+      );
+    }
     return this.loadoutsService.update(+id, loadoutData);
   }
 
@@ -137,7 +153,14 @@ export class LoadoutsController {
     description: 'The loadout has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'Loadout not found.' })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id') id: string, @Request() req): Promise<void> {
+    const user: User = req.user; // Corrected from req.username
+    const loadout = await this.loadoutsService.findOne(id);
+    if (loadout.createdBy?.id !== user.id && user.role !== 'admin') {
+      throw new ForbiddenException(
+        'You do not have permission to delete this loadout',
+      );
+    }
     return this.loadoutsService.remove(+id);
   }
 }

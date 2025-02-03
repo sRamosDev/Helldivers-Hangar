@@ -3,6 +3,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Weapon } from '../weapon/weapon.entity';
 import { Throwable } from '../throwable/throwable.entity';
 import { Gear } from '../gear/gear.entity';
+import { User } from '../users/users.entity';
 
 @Entity()
 export class Loadout {
@@ -35,4 +36,7 @@ export class Loadout {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
+
+  @ManyToOne(() => User, { nullable: true })
+  createdBy: User;
 }
