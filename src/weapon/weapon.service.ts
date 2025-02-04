@@ -1,10 +1,6 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, ILike, Repository } from "typeorm";
+import { Repository } from 'typeorm';
 import { Weapon } from './weapon.entity';
 import { CreateWeaponDto } from './dto/createWeapon.dto';
 import { Trait } from '../trait/trait.entity';
@@ -40,22 +36,8 @@ export class WeaponService {
     return this.weaponRepository.save(weapon);
   }
 
-  async findAll(
-    page?: number,
-    search?: string,
-  ): Promise<{ data: Weapon[]; total: number; page?: number; pageCount?: number }> {
-    const take = 10; // Number of items per page
-    const skip = page ? (page - 1) * take : 0;
-
-    const options: FindManyOptions<Weapon> = {
-      take: page ? take : undefined,
-      skip: page ? skip : undefined,
-      where: search ? { name: ILike(`%${search}%`) } : {},
-    };
-
-    const [data, total] = await this.weaponRepository.findAndCount(options);
-    const pageCount = page ? Math.ceil(total / take) : undefined;
-    return { data, total, page, pageCount };
+  async findAll(): Promise<Weapon[]> {
+    return this.weaponRepository.find();
   }
 
   async findOne(id: number): Promise<Weapon> {
@@ -97,12 +79,8 @@ export class WeaponService {
     const traits = await this.traitRepository.findByIds(traitIds);
 
     if (traits.length !== traitIds.length) {
-      const missingIds = traitIds.filter(
-        (id) => !traits.some((p) => p.id === id),
-      );
-      throw new BadRequestException(
-        `Invalid trait IDs: ${missingIds.join(', ')}`,
-      );
+      const missingIds = traitIds.filter((id) => !traits.some((p) => p.id === id));
+      throw new BadRequestException(`Invalid trait IDs: ${missingIds.join(', ')}`);
     }
 
     return traits;
@@ -112,12 +90,8 @@ export class WeaponService {
     const firing_modes = await this.fireModeRepository.findByIds(firingModeIds);
 
     if (firing_modes.length !== firingModeIds.length) {
-      const missingIds = firingModeIds.filter(
-        (id) => !firing_modes.some((p) => p.id === id),
-      );
-      throw new BadRequestException(
-        `Invalid trait IDs: ${missingIds.join(', ')}`,
-      );
+      const missingIds = firingModeIds.filter((id) => !firing_modes.some((p) => p.id === id));
+      throw new BadRequestException(`Invalid trait IDs: ${missingIds.join(', ')}`);
     }
 
     return firing_modes;

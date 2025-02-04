@@ -46,7 +46,7 @@ export class GearService {
   }
 
   async findAll(): Promise<Gear[]> {
-    return this.gearRepository.find({ relations: ['passive'] });
+    return this.gearRepository.find();
   }
 
   async findOne(id: number): Promise<Gear> {
