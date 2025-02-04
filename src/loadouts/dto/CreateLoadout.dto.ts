@@ -57,4 +57,9 @@ export class CreateLoadoutDto {
   @IsNumber()
   @IsNotEmpty()
   throwableId: number;
+
+  @ApiProperty({ description: 'Turnstile token for verification' })
+  @IsNotEmpty()
+  @IsString()
+  cfTurnstileToken: string;
 }

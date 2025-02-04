@@ -26,6 +26,7 @@ import {
 import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
 import { UpdateLoadoutDto } from './dto/UpdateLoadout.dto';
 import { User } from '../users/users.entity';
+import { TurnstileGuard } from "../auth/turnstile.guard";
 
 @ApiTags('Loadouts')
 @Controller('loadouts')
@@ -61,6 +62,7 @@ export class LoadoutsController {
       },
     },
   })
+  @UseGuards(TurnstileGuard)
   async create(
     @Body() loadoutData: CreateLoadoutDto,
     @Request() req,
