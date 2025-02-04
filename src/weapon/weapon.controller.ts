@@ -6,20 +6,11 @@ import {
   Param,
   Post,
   Put,
-  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { v4 as uuidv4 } from 'uuid';
 import { Roles } from '../auth/roles.decorator';
@@ -66,10 +57,7 @@ export class WeaponController {
       },
     },
   })
-  async uploadWeaponImage(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('id') id: number,
-  ) {
+  async uploadWeaponImage(@UploadedFile() file: Express.Multer.File, @Param('id') id: number) {
     try {
       const weapon = await this.weaponService.findOne(+id);
       if (!weapon) {
@@ -177,10 +165,7 @@ export class WeaponController {
       },
     },
   })
-  async create(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() weaponData: CreateWeaponDto,
-  ) {
+  async create(@UploadedFile() file: Express.Multer.File, @Body() weaponData: CreateWeaponDto) {
     let imageUrl = '';
     if (file) {
       const processedBuffer = await processImage(file.buffer);
@@ -198,11 +183,8 @@ export class WeaponController {
     status: 200,
     description: 'Weapons retrieved successfully',
   })
-  async findAll(
-    @Query('page') page?: number,
-    @Query('search') search?: string,
-  ) {
-    return this.weaponService.findAll(page, search);
+  async findAll() {
+    return this.weaponService.findAll();
   }
 
   @Get(':id')
