@@ -10,23 +10,16 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-//import { Request } from 'express';
 import { LoadoutsService } from './loadouts.service';
 import { Loadout } from './loadout.entity';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
 import { UpdateLoadoutDto } from './dto/UpdateLoadout.dto';
 import { User } from '../users/users.entity';
-import { TurnstileGuard } from "../auth/turnstile.guard";
+import { TurnstileGuard } from '../auth/turnstile.guard';
 
 @ApiTags('Loadouts')
 @Controller('loadouts')
@@ -58,15 +51,13 @@ export class LoadoutsController {
           primaryWeaponId: 4,
           secondaryWeaponId: 36,
           throwableId: 6,
+          cfTurnstileToken: 'turnstile-token-from-frontend',
         },
       },
     },
   })
   @UseGuards(TurnstileGuard)
-  async create(
-    @Body() loadoutData: CreateLoadoutDto,
-    @Request() req,
-  ): Promise<Loadout> {
+  async create(@Body() loadoutData: CreateLoadoutDto, @Request() req): Promise<Loadout> {
     const user: User = req.user;
     return this.loadoutsService.create(loadoutData, user);
   }
@@ -127,17 +118,14 @@ export class LoadoutsController {
       },
     },
   })
-  async update(
-    @Param('id') id: string,
-    @Body() loadoutData: UpdateLoadoutDto,
-    @Request() req,
-  ): Promise<Loadout> {
-    const user: User = req.user; // Corrected from req.username
-    const loadout = await this.loadoutsService.findOne(id);
+  async update(@Param('id') id: string, @Body() loadoutData: UpdateLoadoutDto, @Request() req): Promise<Loadout> {
+    const user: User = req.user;
+    const loadout = await this.loadoutsService.findOneById(+id);
+    if (!loadout) {
+      throw new ForbiddenException('Loadout not found');
+    }
     if (loadout.createdBy?.id !== user.id && user.role !== 'admin') {
-      throw new ForbiddenException(
-        'You do not have permission to update this loadout',
-      );
+      throw new ForbiddenException('You do not have permission to update this loadout');
     }
     return this.loadoutsService.update(+id, loadoutData);
   }
@@ -156,12 +144,13 @@ export class LoadoutsController {
   })
   @ApiResponse({ status: 404, description: 'Loadout not found.' })
   async remove(@Param('id') id: string, @Request() req): Promise<void> {
-    const user: User = req.user; // Corrected from req.username
-    const loadout = await this.loadoutsService.findOne(id);
+    const user: User = req.user;
+    const loadout = await this.loadoutsService.findOneById(+id);
+    if (!loadout) {
+      throw new ForbiddenException('Loadout not found');
+    }
     if (loadout.createdBy?.id !== user.id && user.role !== 'admin') {
-      throw new ForbiddenException(
-        'You do not have permission to delete this loadout',
-      );
+      throw new ForbiddenException('You do not have permission to delete this loadout');
     }
     return this.loadoutsService.remove(+id);
   }

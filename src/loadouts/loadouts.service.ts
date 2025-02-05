@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Loadout } from './loadout.entity';
 import { randomBytes } from 'crypto';
 import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
+import { UpdateLoadoutDto } from './dto/UpdateLoadout.dto';
 import { User } from '../users/users.entity';
 
 @Injectable()
@@ -60,17 +61,20 @@ export class LoadoutsService {
         'secondary_weapon',
         'secondary_weapon.traits',
         'throwable',
-        // 'throwable.traits',
       ],
     });
   }
 
-  async update(id: number, loadoutData: any): Promise<Loadout> {
+  async findOneById(id: number): Promise<Loadout> {
     const loadout = await this.loadoutsRepository.findOne({ where: { id } });
     if (!loadout) {
-      throw new Error('Loadout not found');
+      throw new NotFoundException('Loadout not found');
     }
+    return loadout;
+  }
 
+  async update(id: number, loadoutData: UpdateLoadoutDto): Promise<Loadout> {
+    const loadout = await this.findOneById(id);
     const {
       name,
       helmetId,
@@ -81,16 +85,18 @@ export class LoadoutsService {
       throwableId,
     } = loadoutData;
 
-    return this.loadoutsRepository.save({
+    const updatedLoadout = {
       ...loadout,
-      name,
-      helmet: { id: helmetId },
-      armor: { id: armorId },
-      cape: { id: capeId },
-      primaryWeapon: { id: primaryWeaponId },
-      secondaryWeapon: { id: secondaryWeaponId },
-      throwable: { id: throwableId },
-    });
+      name: name ?? loadout.name,
+      helmet: helmetId ? { id: helmetId } : loadout.helmet,
+      armor: armorId ? { id: armorId } : loadout.armor,
+      cape: capeId ? { id: capeId } : loadout.cape,
+      primary_weapon: primaryWeaponId ? { id: primaryWeaponId } : loadout.primary_weapon,
+      secondary_weapon: secondaryWeaponId ? { id: secondaryWeaponId } : loadout.secondary_weapon,
+      throwable: throwableId ? { id: throwableId } : loadout.throwable,
+    };
+
+    return this.loadoutsRepository.save(updatedLoadout);
   }
 
   async remove(id: number): Promise<void> {
