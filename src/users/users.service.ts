@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from './users.entity';
-import { CreateUserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/createUser.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
 
 export class UsersService {
   constructor(
@@ -30,14 +31,11 @@ export class UsersService {
       displayName: displayName.trim(),
       username: username.trim().toLowerCase(),
       email: email.trim().toLowerCase(),
-      password,
+      password: password.trim(),
     };
 
     const existingUser = await this.usersRepository.findOne({
-      where: [
-        { email: sanitizedDto.email },
-        { username: sanitizedDto.username },
-      ],
+      where: [{ email: sanitizedDto.email }, { username: sanitizedDto.username }],
     });
 
     if (existingUser) {
@@ -53,6 +51,31 @@ export class UsersService {
 
     await this.usersRepository.save(newUser);
     return newUser;
+  }
+
+  async updateUserById(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const { displayName, email, password, role } = updateUserDto;
+
+    if (displayName) {
+      user.displayName = displayName.trim();
+    }
+    if (email) {
+      user.email = email.trim().toLowerCase();
+    }
+    if (password) {
+      user.password = await bcrypt.hash(password.trim(), 12);
+    }
+    if (role) {
+      user.role = role;
+    }
+
+    await this.usersRepository.save(user);
+    return user;
   }
 
   async deleteById(id: number) {
