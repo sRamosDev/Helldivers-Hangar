@@ -2,7 +2,6 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as readline from 'readline';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -15,12 +14,15 @@ export class DatabaseService implements OnModuleInit {
     this.logger.log('DatabaseService has started');
     const isPopulated = await this.isDatabasePopulated();
     if (!isPopulated) {
-      const shouldPopulate = await this.askUserToPopulate();
+      const shouldPopulate = process.argv.includes('--populate') || process.env.POPULATE_DB.toLowerCase() === 'true';
+      const shouldNotPopulate = process.argv.includes('--no-populate') || process.env.POPULATE_DB.toLowerCase() === 'false';
       if (shouldPopulate) {
         this.logger.log('Populating database with demo data');
         await this.populateDatabase();
-      } else {
+      } else if (shouldNotPopulate) {
         this.logger.log('Skipping database population');
+      } else {
+        this.logger.log('No population flag set, please specify --populate or --no-populate');
       }
     } else {
       this.logger.log('Database is already populated');
@@ -42,28 +44,5 @@ export class DatabaseService implements OnModuleInit {
     const sqlFilePath = path.join(__dirname, '../populate-db.sql');
     const sql = fs.readFileSync(sqlFilePath, 'utf8');
     await this.dataSource.query(sql);
-  }
-
-  private askUserToPopulate(): Promise<boolean> {
-    return Promise.race([
-      new Promise<boolean>((resolve) => {
-        const rl = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
-        rl.question(
-          'Do you want to populate the database with demo data? (yes/no): ',
-          (answer) => {
-            rl.close();
-            resolve(
-              answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y',
-            );
-          },
-        );
-      }),
-      new Promise<boolean>((resolve) =>
-        setTimeout(() => resolve(false), 30000),
-      ),
-    ]);
   }
 }
