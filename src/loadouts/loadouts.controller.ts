@@ -16,8 +16,8 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
-import { UpdateLoadoutDto } from './dto/UpdateLoadout.dto';
+import { CreateLoadoutDto } from './dto/createLoadout.dto';
+import { UpdateLoadoutDto } from './dto/updateLoadout.dto';
 import { User } from '../users/users.entity';
 import { TurnstileGuard } from '../auth/turnstile.guard';
 

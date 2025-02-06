@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Loadout } from './loadout.entity';
 import { randomBytes } from 'crypto';
-import { CreateLoadoutDto } from './dto/CreateLoadout.dto';
-import { UpdateLoadoutDto } from './dto/UpdateLoadout.dto';
+import { CreateLoadoutDto } from './dto/createLoadout.dto';
+import { UpdateLoadoutDto } from './dto/updateLoadout.dto';
 import { User } from '../users/users.entity';
 
 @Injectable()
@@ -76,7 +76,6 @@ export class LoadoutsService {
   async update(id: number, loadoutData: UpdateLoadoutDto): Promise<Loadout> {
     const loadout = await this.findOneById(id);
     const {
-      name,
       helmetId,
       armorId,
       capeId,
@@ -87,7 +86,6 @@ export class LoadoutsService {
 
     const updatedLoadout = {
       ...loadout,
-      name: name ?? loadout.name,
       helmet: helmetId ? { id: helmetId } : loadout.helmet,
       armor: armorId ? { id: armorId } : loadout.armor,
       cape: capeId ? { id: capeId } : loadout.cape,
