@@ -22,9 +22,10 @@ import { multerConfig, processImage } from '../utils/image-upload.util';
 import { CreateWeaponDto } from './dto/createWeapon.dto';
 import { UpdateWeaponDto } from './dto/updateWeapon.dto';
 import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
+import { Weapon } from "./weapon.entity";
 
-@ApiTags('Weapon')
-@Controller('weapon')
+@ApiTags('Weapos')
+@Controller('weapons')
 export class WeaponController {
   constructor(private readonly weaponService: WeaponService) {}
 
@@ -175,17 +176,16 @@ export class WeaponController {
   }
 
   @Get()
-  @ApiOperation({
-    summary: 'Get all weapons',
-    description: 'Retrieve paginated list of all available weapons',
-  })
+  @ApiOperation({ summary: 'Get all weapons' })
   @ApiResponse({
     status: 200,
-    description: 'Weapons retrieved successfully',
+    description: 'Weapon list',
+    type: [Weapon]
   })
-  async findAll() {
+  async findAll(): Promise<Weapon[]> {
     return this.weaponService.findAll();
   }
+
 
   @Get(':id')
   @ApiOperation({
