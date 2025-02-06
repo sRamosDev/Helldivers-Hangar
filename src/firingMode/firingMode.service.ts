@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FiringMode } from './firingMode.entity';
+import { CreateFiringModeDto } from './dto/CreateFiringMode.dto';
+import { UpdateFiringModeDto } from './dto/UpdateFiringMode.dto';
 
 @Injectable()
 export class FiringModeService {
@@ -14,17 +16,28 @@ export class FiringModeService {
     return this.firingModeRepository.find();
   }
 
-  findOne(id: number): Promise<FiringMode> {
-    return this.firingModeRepository.findOne({ where: { id } });
+  async findOne(id: number): Promise<FiringMode> {
+    const firingMode = await this.firingModeRepository.findOne({ where: { id } });
+    if (!firingMode) {
+      throw new NotFoundException('Firing mode not found');
+    }
+    return firingMode;
   }
 
-  async create(firingMode: FiringMode): Promise<FiringMode> {
+  async create(
+    createFiringModeDto: CreateFiringModeDto,
+  ): Promise<FiringMode> {
+    const firingMode = this.firingModeRepository.create(createFiringModeDto);
     return this.firingModeRepository.save(firingMode);
   }
 
-  async update(id: number, firingMode: FiringMode): Promise<FiringMode> {
-    await this.firingModeRepository.update(id, firingMode);
-    return this.findOne(id);
+  async update(
+    id: number,
+    updateFiringModeDto: UpdateFiringModeDto,
+  ): Promise<FiringMode> {
+    const firingMode = await this.findOne(id);
+    const updatedFiringMode = Object.assign(firingMode, updateFiringModeDto);
+    return this.firingModeRepository.save(updatedFiringMode);
   }
 
   async remove(id: number): Promise<void> {

@@ -20,6 +20,8 @@ import {
 import { Roles } from '../auth/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
+import { CreateFiringModeDto } from './dto/CreateFiringMode.dto';
+import { UpdateFiringModeDto } from './dto/UpdateFiringMode.dto';
 
 @ApiTags('firing-modes')
 @Controller('firing-modes')
@@ -28,7 +30,11 @@ export class FiringModeController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all firing modes' })
-  @ApiResponse({ status: 200, description: 'Returns all firing modes' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all firing modes',
+    type: [FiringMode],
+  })
   findAll(): Promise<FiringMode[]> {
     return this.firingModeService.findAll();
   }
@@ -41,7 +47,11 @@ export class FiringModeController {
     type: Number,
     example: 1,
   })
-  @ApiResponse({ status: 200, description: 'Returns the firing mode' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the firing mode',
+    type: FiringMode,
+  })
   @ApiResponse({ status: 404, description: 'Firing mode not found' })
   findOne(@Param('id') id: number): Promise<FiringMode> {
     return this.firingModeService.findOne(id);
@@ -54,19 +64,23 @@ export class FiringModeController {
   @ApiResponse({
     status: 201,
     description: 'The firing mode has been successfully created.',
+    type: FiringMode,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiBody({
     description: 'Firing mode data',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'Single Shot' },
+    type: CreateFiringModeDto,
+    examples: {
+      example1: {
+        summary: 'Create firing mode example',
+        value: { name: 'Single Shot' },
       },
     },
   })
-  create(@Body() firingMode: FiringMode): Promise<FiringMode> {
-    return this.firingModeService.create(firingMode);
+  create(
+    @Body() createFiringModeDto: CreateFiringModeDto,
+  ): Promise<FiringMode> {
+    return this.firingModeService.create(createFiringModeDto);
   }
 
   @Put(':id')
@@ -77,23 +91,25 @@ export class FiringModeController {
   @ApiResponse({
     status: 200,
     description: 'The firing mode has been successfully updated.',
+    type: FiringMode,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Firing mode not found' })
   @ApiBody({
     description: 'Updated firing mode data',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'Burst Fire' },
+    type: UpdateFiringModeDto,
+    examples: {
+      example1: {
+        summary: 'Update firing mode example',
+        value: { name: 'Burst Fire' },
       },
     },
   })
   update(
     @Param('id') id: number,
-    @Body() firingMode: FiringMode,
+    @Body() updateFiringModeDto: UpdateFiringModeDto,
   ): Promise<FiringMode> {
-    return this.firingModeService.update(id, firingMode);
+    return this.firingModeService.update(id, updateFiringModeDto);
   }
 
   @Delete(':id')
