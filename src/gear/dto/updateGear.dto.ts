@@ -1,68 +1,57 @@
-import {
-  IsArray,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { GearCategory } from '../gear.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateGearDto {
-  @ApiProperty({ description: 'Name of the gear', required: false })
+  @ApiPropertyOptional({ description: 'Name of the gear' })
   @IsString()
   @IsOptional()
-  name: string;
+  name?: string;
 
-  @ApiProperty({ description: 'Description of the gear', required: false })
+  @ApiPropertyOptional({ description: 'Description of the gear' })
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 
-  @ApiProperty({ description: 'Type of the gear', required: false })
+  @ApiPropertyOptional({ description: 'Type of the gear' })
   @IsString()
   @IsOptional()
-  type: string;
+  type?: string;
 
-  @ApiProperty({ description: 'Armor rating of the gear', required: false })
+  @ApiPropertyOptional({ description: 'Armor rating of the gear' })
   @IsNumber()
   @IsOptional()
-  armor_rating: number;
+  armor_rating?: number;
 
-  @ApiProperty({ description: 'Speed provided by the gear', required: false })
+  @ApiPropertyOptional({ description: 'Speed provided by the gear' })
   @IsNumber()
   @IsOptional()
-  speed: number;
+  speed?: number;
 
-  @ApiProperty({
-    description: 'Stamina regeneration provided by the gear',
-    required: false,
-  })
+  @ApiPropertyOptional({ description: 'Stamina regeneration provided by the gear' })
   @IsNumber()
   @IsOptional()
-  stamina_regen: number;
+  stamina_regen?: number;
 
-  @ApiProperty({ description: 'Image URL of the gear', required: false })
+  @ApiPropertyOptional({ description: 'Image URL of the gear' })
   @IsString()
   @IsOptional()
-  imageUrl: string;
+  imageUrl?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'IDs of passive abilities associated with the gear',
     type: [Number],
-    required: false,
   })
   @IsArray()
   @IsOptional()
   @IsNumber({}, { each: true })
-  passiveIds: number[];
+  passiveIds?: number[];
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Category of the gear',
     enum: GearCategory,
-    required: false,
   })
   @IsEnum(GearCategory)
   @IsOptional()
-  category: GearCategory;
+  category?: GearCategory;
 }

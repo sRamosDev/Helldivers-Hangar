@@ -20,9 +20,7 @@ export class GearService {
   ) {}
 
   private async verifyGearExists(id: number): Promise<Gear> {
-    const gear = await this.gearRepository.findOne({
-      where: { id },
-    });
+    const gear = await this.gearRepository.findOne({ where: { id } });
     if (!gear) {
       throw new NotFoundException(`Gear with ID ${id} not found`);
     }
@@ -31,7 +29,8 @@ export class GearService {
 
   async updateImageUrl(id: number, imageUrl: string): Promise<Gear> {
     const gear = await this.verifyGearExists(id);
-    return this.gearRepository.save({ ...gear, image_url: imageUrl });
+    gear.image_url = imageUrl;
+    return this.gearRepository.save(gear);
   }
 
   async create(createDto: CreateGearDto): Promise<Gear> {
@@ -39,9 +38,9 @@ export class GearService {
 
     const gear = this.gearRepository.create({
       ...createDto,
+      image_url: createDto.imageUrl,
       passive: passives,
     });
-
     return this.gearRepository.save(gear);
   }
 
@@ -50,21 +49,26 @@ export class GearService {
   }
 
   async findOne(id: number): Promise<Gear> {
-    return this.gearRepository.findOne({
+    const gear = await this.gearRepository.findOne({
       where: { id },
       relations: ['passive'],
     });
+    if (!gear) {
+      throw new NotFoundException(`Gear with ID ${id} not found`);
+    }
+    return gear;
   }
 
   async update(id: number, updateDto: UpdateGearDto): Promise<Gear> {
     const gear = await this.verifyGearExists(id);
-    const passives = await this.validatePassives(updateDto.passiveIds);
-
+    const passives = updateDto.passiveIds
+      ? await this.validatePassives(updateDto.passiveIds)
+      : gear.passive;
     const updatedGear = this.gearRepository.merge(gear, {
       ...updateDto,
+      image_url: updateDto.imageUrl || gear.image_url,
       passive: passives,
     });
-
     return this.gearRepository.save(updatedGear);
   }
 
@@ -73,8 +77,10 @@ export class GearService {
   }
 
   private async validatePassives(passiveIds: number[]): Promise<Passive[]> {
+    if (!passiveIds) {
+      return [];
+    }
     const passives = await this.passiveRepository.findByIds(passiveIds);
-
     if (passives.length !== passiveIds.length) {
       const missingIds = passiveIds.filter(
         (id) => !passives.some((p) => p.id === id),
@@ -83,7 +89,6 @@ export class GearService {
         `Invalid passive IDs: ${missingIds.join(', ')}`,
       );
     }
-
     return passives;
   }
 }

@@ -72,21 +72,16 @@ export class GearController {
     try {
       const gear = await this.gearService.findOne(+id);
       if (!gear) {
-        // noinspection ExceptionCaughtLocallyJS
         throw new BadRequestException('Gear not found');
       }
-
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
       await new Promise((resolve) => setTimeout(resolve, 5000));
       const imageUrl = await uploadToAzure(uniqueName, processedBuffer);
-
       if (gear.image_url) {
         await deleteFromAzure(gear.image_url);
       }
-
       await this.gearService.updateImageUrl(+id, imageUrl);
-
       return { success: true, imageUrl };
     } catch (error) {
       throw new BadRequestException(error.message || 'Image upload failed');
@@ -111,7 +106,8 @@ export class GearController {
     let imageUrl = '';
     if (file) {
       const processedBuffer = await processImage(file.buffer);
-      imageUrl = await uploadToAzure(file.filename, processedBuffer);
+      const uniqueName = `${uuidv4()}.webp`;
+      imageUrl = await uploadToAzure(uniqueName, processedBuffer);
     }
     return this.gearService.create({ ...gearData, imageUrl });
   }
@@ -119,7 +115,7 @@ export class GearController {
   @Get()
   @ApiOperation({
     summary: 'Retrieve all gear items',
-    description: 'Retrieve paginated list of all available gears',
+    description: 'Retrieve a list of all available gear items',
   })
   @ApiResponse({
     status: 200,
@@ -168,7 +164,6 @@ export class GearController {
     @Body() gearData: UpdateGearDto,
   ) {
     let imageUrl: string;
-
     if (file) {
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
@@ -179,7 +174,6 @@ export class GearController {
       const gear = await this.gearService.findOne(+id);
       imageUrl = gear.image_url;
     }
-
     return this.gearService.update(+id, { ...gearData, imageUrl });
   }
 }

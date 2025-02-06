@@ -1,10 +1,4 @@
-import {
-  IsArray,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { GearCategory } from '../gear.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -36,7 +30,7 @@ export class CreateGearDto {
   @ApiProperty({ description: 'Image URL of the gear', required: false })
   @IsString()
   @IsOptional()
-  imageUrl: string;
+  imageUrl?: string;
 
   @ApiProperty({
     description: 'IDs of passive abilities associated with the gear',
