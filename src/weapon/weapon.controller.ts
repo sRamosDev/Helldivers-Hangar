@@ -23,7 +23,7 @@ import { CreateWeaponDto } from './dto/createWeapon.dto';
 import { UpdateWeaponDto } from './dto/updateWeapon.dto';
 import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
 
-@ApiTags('weapon')
+@ApiTags('Weapon')
 @Controller('weapon')
 export class WeaponController {
   constructor(private readonly weaponService: WeaponService) {}
