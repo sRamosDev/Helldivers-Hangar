@@ -48,4 +48,20 @@ export class UsersController {
   async deleteById(@Param('id') id: string): Promise<User> {
     return this.usersService.deleteById(Number(id));
   }
+
+  @Post('deactivate/:id')
+  @ApiBearerAuth()
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  async deactivateUser(@Param('id') id: string): Promise<User> {
+    return this.usersService.deactivateUser(Number(id));
+  }
+
+  @Post('reactivate/:id')
+  @ApiBearerAuth()
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  async reactivateUser(@Param('id') id: string): Promise<User> {
+    return this.usersService.reactivateUser(Number(id));
+  }
 }

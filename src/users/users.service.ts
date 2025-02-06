@@ -85,4 +85,24 @@ export class UsersService {
     await this.usersRepository.remove(user);
     return user;
   }
+
+  async deactivateUser(id: number): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.isActive = false;
+    await this.usersRepository.save(user);
+    return user;
+  }
+
+  async reactivateUser(id: number): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.isActive = true;
+    await this.usersRepository.save(user);
+    return user;
+  }
 }
