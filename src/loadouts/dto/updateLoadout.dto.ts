@@ -3,14 +3,6 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateLoadoutDto {
   @ApiPropertyOptional({
-    description: 'Name of the loadout',
-    example: 'Stealth Loadout',
-  })
-  @IsString()
-  @IsOptional()
-  name?: string;
-
-  @ApiPropertyOptional({
     description: 'ID of the helmet',
     example: 1,
   })
