@@ -1,9 +1,4 @@
-import {
-  IsArray,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateThrowableDto {
@@ -13,7 +8,7 @@ export class UpdateThrowableDto {
   })
   @IsString()
   @IsOptional()
-  name: string;
+  name?: string;
 
   @ApiPropertyOptional({
     description: 'Description of the throwable',
@@ -21,7 +16,7 @@ export class UpdateThrowableDto {
   })
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 
   @ApiPropertyOptional({
     description: 'Damage points',
@@ -30,7 +25,7 @@ export class UpdateThrowableDto {
   })
   @IsNumber()
   @IsOptional()
-  damage: number;
+  damage?: number;
 
   @ApiPropertyOptional({
     description: 'Penetration level',
@@ -39,7 +34,7 @@ export class UpdateThrowableDto {
   })
   @IsNumber()
   @IsOptional()
-  penetration: number;
+  penetration?: number;
 
   @ApiPropertyOptional({
     description: 'Outer radius of the explosion',
@@ -48,7 +43,7 @@ export class UpdateThrowableDto {
   })
   @IsNumber()
   @IsOptional()
-  outer_radius: number;
+  outer_radius?: number;
 
   @ApiPropertyOptional({
     description: 'Fuse time in seconds',
@@ -57,7 +52,7 @@ export class UpdateThrowableDto {
   })
   @IsNumber()
   @IsOptional()
-  fuse_time: number;
+  fuse_time?: number;
 
   @ApiPropertyOptional({
     description: 'Image URL of the throwable',
@@ -65,7 +60,7 @@ export class UpdateThrowableDto {
   })
   @IsString()
   @IsOptional()
-  image_url: string;
+  image_url?: string;
 
   @ApiPropertyOptional({
     description: 'List of trait IDs associated with the throwable',
@@ -75,5 +70,5 @@ export class UpdateThrowableDto {
   @IsArray()
   @IsOptional()
   @IsNumber({}, { each: true })
-  traits: number[];
+  traits?: number[];
 }

@@ -1,10 +1,5 @@
-import {
-  IsArray,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateThrowableDto {
   @ApiProperty({
@@ -53,13 +48,13 @@ export class CreateThrowableDto {
   @IsNumber()
   fuse_time: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Image URL of the throwable',
     example: 'http://example.com/image.png',
   })
   @IsString()
   @IsOptional()
-  image_url: string;
+  image_url?: string;
 
   @ApiProperty({
     description: 'List of trait IDs associated with the throwable',
