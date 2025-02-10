@@ -52,3 +52,8 @@ export async function deleteFromAzure(imageUrl: string): Promise<void> {
     console.error('Azure deletion error:', error);
   }
 }
+
+export interface AzureStorageConfig {
+  containerName: string;
+  connectionString: string;
+}
