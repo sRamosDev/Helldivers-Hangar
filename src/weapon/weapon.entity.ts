@@ -1,15 +1,8 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Trait } from '../trait/trait.entity';
 import { FiringMode } from '../firingMode/firingMode.entity';
 import { Loadout } from '../loadouts/loadout.entity';
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum ArmorPenetration {
   Light = 'Light',
@@ -33,7 +26,7 @@ export class Weapon {
 
   @ApiProperty({
     example: 'Standard issue plasma rifle',
-    description: 'Weapon description'
+    description: 'Weapon description',
   })
   @Column()
   description: string;

@@ -16,17 +16,11 @@ export const multerConfig = {
     const fileExt = extname(file.originalname).toLowerCase();
 
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      return cb(
-        new BadRequestException(`Invalid file type: ${file.mimetype}`),
-        false,
-      );
+      return cb(new BadRequestException(`Invalid file type: ${file.mimetype}`), false);
     }
 
     if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
-      return cb(
-        new BadRequestException(`Invalid file extension: ${fileExt}`),
-        false,
-      );
+      return cb(new BadRequestException(`Invalid file extension: ${fileExt}`), false);
     }
 
     cb(null, true);

@@ -1,22 +1,7 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { FiringModeService } from './firingMode.service';
 import { FiringMode } from './firingMode.entity';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -77,9 +62,7 @@ export class FiringModeController {
       },
     },
   })
-  create(
-    @Body() createFiringModeDto: CreateFiringModeDto,
-  ): Promise<FiringMode> {
+  create(@Body() createFiringModeDto: CreateFiringModeDto): Promise<FiringMode> {
     return this.firingModeService.create(createFiringModeDto);
   }
 
@@ -105,10 +88,7 @@ export class FiringModeController {
       },
     },
   })
-  update(
-    @Param('id') id: number,
-    @Body() updateFiringModeDto: UpdateFiringModeDto,
-  ): Promise<FiringMode> {
+  update(@Param('id') id: number, @Body() updateFiringModeDto: UpdateFiringModeDto): Promise<FiringMode> {
     return this.firingModeService.update(id, updateFiringModeDto);
   }
 

@@ -22,7 +22,7 @@ import { multerConfig, processImage } from '../utils/image-upload.util';
 import { CreateWeaponDto } from './dto/createWeapon.dto';
 import { UpdateWeaponDto } from './dto/updateWeapon.dto';
 import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
-import { Weapon } from "./weapon.entity";
+import { Weapon } from './weapon.entity';
 
 @ApiTags('Weapos')
 @Controller('weapons')
@@ -180,12 +180,11 @@ export class WeaponController {
   @ApiResponse({
     status: 200,
     description: 'Weapon list',
-    type: [Weapon]
+    type: [Weapon],
   })
   async findAll(): Promise<Weapon[]> {
     return this.weaponService.findAll();
   }
-
 
   @Get(':id')
   @ApiOperation({

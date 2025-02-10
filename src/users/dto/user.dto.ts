@@ -1,11 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -20,8 +13,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   @Matches(/^[a-zA-Z0-9_-]+$/, {
-    message:
-      'Username must only contain letters, numbers, dashes, and underscores',
+    message: 'Username must only contain letters, numbers, dashes, and underscores',
   })
   @MinLength(4)
   @MaxLength(20)
@@ -35,15 +27,14 @@ export class CreateUserDto {
 
   @ApiProperty({
     example: 'StrongPass123!',
-    description: 'Must contain at least 10 characters, one letter, one number, and one special character'
+    description: 'Must contain at least 10 characters, one letter, one number, and one special character',
   })
   @IsNotEmpty()
   @IsString()
   @MinLength(10)
   @MaxLength(72)
   @Matches(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])/, {
-    message:
-      'Password must include at least one letter, one number, and one special character',
+    message: 'Password must include at least one letter, one number, and one special character',
   })
   password: string;
 }

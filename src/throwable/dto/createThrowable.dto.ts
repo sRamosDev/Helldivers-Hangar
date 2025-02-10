@@ -1,5 +1,5 @@
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateThrowableDto {
   @ApiProperty({
@@ -11,7 +11,8 @@ export class CreateThrowableDto {
 
   @ApiProperty({
     description: 'Description of the throwable',
-    example: 'A high explosive grenade which damages lightly armored targets. Creates high damage over a small area when detonated.',
+    example:
+      'A high explosive grenade which damages lightly armored targets. Creates high damage over a small area when detonated.',
   })
   @IsString()
   description: string;

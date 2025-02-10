@@ -11,8 +11,7 @@ if (!connectionString) {
   throw new Error('Azure Storage connection string not configured');
 }
 
-const blobServiceClient =
-  BlobServiceClient.fromConnectionString(connectionString);
+const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
 const containerClient = blobServiceClient.getContainerClient(containerName);
 
 // Create container if it doesn't exist (add this)
@@ -27,13 +26,9 @@ async function ensureContainerExists() {
 
 ensureContainerExists().catch(console.error);
 
-export async function uploadToAzure(
-  filename: string,
-  buffer: Buffer,
-): Promise<string> {
+export async function uploadToAzure(filename: string, buffer: Buffer): Promise<string> {
   try {
-    const blockBlobClient: BlockBlobClient =
-      containerClient.getBlockBlobClient(filename);
+    const blockBlobClient: BlockBlobClient = containerClient.getBlockBlobClient(filename);
     await blockBlobClient.upload(buffer, buffer.length);
     return blockBlobClient.url;
   } catch (error) {

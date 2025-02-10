@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Gear } from './gear.entity';
@@ -18,14 +14,6 @@ export class GearService {
     @InjectRepository(Passive)
     private readonly passiveRepository: Repository<Passive>,
   ) {}
-
-  private async verifyGearExists(id: number): Promise<Gear> {
-    const gear = await this.gearRepository.findOne({ where: { id } });
-    if (!gear) {
-      throw new NotFoundException(`Gear with ID ${id} not found`);
-    }
-    return gear;
-  }
 
   async updateImageUrl(id: number, imageUrl: string): Promise<Gear> {
     const gear = await this.verifyGearExists(id);
@@ -61,9 +49,7 @@ export class GearService {
 
   async update(id: number, updateDto: UpdateGearDto): Promise<Gear> {
     const gear = await this.verifyGearExists(id);
-    const passives = updateDto.passiveIds
-      ? await this.validatePassives(updateDto.passiveIds)
-      : gear.passive;
+    const passives = updateDto.passiveIds ? await this.validatePassives(updateDto.passiveIds) : gear.passive;
     const updatedGear = this.gearRepository.merge(gear, {
       ...updateDto,
       image_url: updateDto.imageUrl || gear.image_url,
@@ -76,18 +62,22 @@ export class GearService {
     await this.gearRepository.delete(id);
   }
 
+  private async verifyGearExists(id: number): Promise<Gear> {
+    const gear = await this.gearRepository.findOne({ where: { id } });
+    if (!gear) {
+      throw new NotFoundException(`Gear with ID ${id} not found`);
+    }
+    return gear;
+  }
+
   private async validatePassives(passiveIds: number[]): Promise<Passive[]> {
     if (!passiveIds) {
       return [];
     }
     const passives = await this.passiveRepository.findByIds(passiveIds);
     if (passives.length !== passiveIds.length) {
-      const missingIds = passiveIds.filter(
-        (id) => !passives.some((p) => p.id === id),
-      );
-      throw new BadRequestException(
-        `Invalid passive IDs: ${missingIds.join(', ')}`,
-      );
+      const missingIds = passiveIds.filter((id) => !passives.some((p) => p.id === id));
+      throw new BadRequestException(`Invalid passive IDs: ${missingIds.join(', ')}`);
     }
     return passives;
   }

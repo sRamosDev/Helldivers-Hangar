@@ -12,7 +12,6 @@ export class AggregateController {
     private readonly weaponService: WeaponService,
     private readonly throwableService: ThrowableService,
     private readonly gearService: GearService,
-
     private readonly firingModeService: FiringModeService,
     private readonly traitService: TraitService,
     private readonly passiveService: PassiveService,

@@ -30,7 +30,7 @@ export class TraitService {
   }
 
   async update(id: number, updateTraitDto: UpdateTraitDto): Promise<Trait> {
-    await this.findOne(id); 
+    await this.findOne(id);
     await this.traitRepository.update(id, updateTraitDto);
     return this.findOne(id);
   }

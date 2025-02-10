@@ -24,17 +24,12 @@ export class FiringModeService {
     return firingMode;
   }
 
-  async create(
-    createFiringModeDto: CreateFiringModeDto,
-  ): Promise<FiringMode> {
+  async create(createFiringModeDto: CreateFiringModeDto): Promise<FiringMode> {
     const firingMode = this.firingModeRepository.create(createFiringModeDto);
     return this.firingModeRepository.save(firingMode);
   }
 
-  async update(
-    id: number,
-    updateFiringModeDto: UpdateFiringModeDto,
-  ): Promise<FiringMode> {
+  async update(id: number, updateFiringModeDto: UpdateFiringModeDto): Promise<FiringMode> {
     const firingMode = await this.findOne(id);
     const updatedFiringMode = Object.assign(firingMode, updateFiringModeDto);
     return this.firingModeRepository.save(updatedFiringMode);

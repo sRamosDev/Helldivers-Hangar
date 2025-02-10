@@ -15,15 +15,7 @@ export class LoadoutsService {
   ) {}
 
   async create(loadoutData: CreateLoadoutDto, user: User): Promise<Loadout> {
-    const {
-      name,
-      helmetId,
-      armorId,
-      capeId,
-      primaryWeaponId,
-      secondaryWeaponId,
-      throwableId,
-    } = loadoutData;
+    const { name, helmetId, armorId, capeId, primaryWeaponId, secondaryWeaponId, throwableId } = loadoutData;
 
     const uniqueId = this.generateUniqueId();
 
@@ -75,14 +67,7 @@ export class LoadoutsService {
 
   async update(id: number, loadoutData: UpdateLoadoutDto): Promise<Loadout> {
     const loadout = await this.findOneById(id);
-    const {
-      helmetId,
-      armorId,
-      capeId,
-      primaryWeaponId,
-      secondaryWeaponId,
-      throwableId,
-    } = loadoutData;
+    const { helmetId, armorId, capeId, primaryWeaponId, secondaryWeaponId, throwableId } = loadoutData;
 
     const updatedLoadout = {
       ...loadout,
@@ -102,9 +87,6 @@ export class LoadoutsService {
   }
 
   private generateUniqueId(): string {
-    return randomBytes(8)
-      .toString('base64')
-      .replace(/\//g, '_')
-      .replace(/\+/g, '-');
+    return randomBytes(8).toString('base64').replace(/\//g, '_').replace(/\+/g, '-');
   }
 }

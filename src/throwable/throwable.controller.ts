@@ -58,10 +58,7 @@ export class ThrowableController {
       },
     },
   })
-  async uploadThrowableImage(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('id') id: number,
-  ) {
+  async uploadThrowableImage(@UploadedFile() file: Express.Multer.File, @Param('id') id: number) {
     try {
       const throwable = await this.throwableService.findOne(id);
       if (!throwable) {
@@ -90,10 +87,7 @@ export class ThrowableController {
   @ApiResponse({ status: 201, description: 'Throwable created successfully', type: Throwable })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiBody({ type: CreateThrowableDto })
-  async create(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() throwableData: CreateThrowableDto,
-  ) {
+  async create(@UploadedFile() file: Express.Multer.File, @Body() throwableData: CreateThrowableDto) {
     let image_url = '';
     if (file) {
       const processedBuffer = await processImage(file.buffer);

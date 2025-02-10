@@ -3,7 +3,7 @@ import { PassiveService } from './passive.service';
 import { Passive } from './passive.entity';
 import { CreatePassiveDto } from './dto/createPassive.dto';
 import { UpdatePassiveDto } from './dto/updatePassive.dto';
-import { ApiOperation, ApiResponse, ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('passives')
 @Controller('passives')

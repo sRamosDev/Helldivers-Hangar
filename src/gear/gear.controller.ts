@@ -20,15 +20,7 @@ import { multerConfig, processImage } from '../utils/image-upload.util';
 import { CreateGearDto } from './dto/createGear.dto';
 import { UpdateGearDto } from './dto/updateGear.dto';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
 
 @ApiTags('Gear')
@@ -65,10 +57,7 @@ export class GearController {
       },
     },
   })
-  async uploadGearImage(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('id') id: number,
-  ) {
+  async uploadGearImage(@UploadedFile() file: Express.Multer.File, @Param('id') id: number) {
     try {
       const gear = await this.gearService.findOne(+id);
       if (!gear) {
@@ -99,10 +88,7 @@ export class GearController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiBody({ type: CreateGearDto })
-  async create(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() gearData: CreateGearDto,
-  ) {
+  async create(@UploadedFile() file: Express.Multer.File, @Body() gearData: CreateGearDto) {
     let imageUrl = '';
     if (file) {
       const processedBuffer = await processImage(file.buffer);
@@ -158,11 +144,7 @@ export class GearController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiBody({ type: UpdateGearDto })
-  async update(
-    @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
-    @Body() gearData: UpdateGearDto,
-  ) {
+  async update(@Param('id') id: string, @UploadedFile() file: Express.Multer.File, @Body() gearData: UpdateGearDto) {
     let imageUrl: string;
     if (file) {
       const processedBuffer = await processImage(file.buffer);

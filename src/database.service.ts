@@ -15,7 +15,8 @@ export class DatabaseService implements OnModuleInit {
     const isPopulated = await this.isDatabasePopulated();
     if (!isPopulated) {
       const shouldPopulate = process.argv.includes('--populate') || process.env.POPULATE_DB.toLowerCase() === 'true';
-      const shouldNotPopulate = process.argv.includes('--no-populate') || process.env.POPULATE_DB.toLowerCase() === 'false';
+      const shouldNotPopulate =
+        process.argv.includes('--no-populate') || process.env.POPULATE_DB.toLowerCase() === 'false';
       if (shouldPopulate) {
         this.logger.log('Populating database with demo data');
         await this.populateDatabase();
@@ -34,9 +35,7 @@ export class DatabaseService implements OnModuleInit {
   }
 
   private async isDatabasePopulated(): Promise<boolean> {
-    const result = await this.dataSource.query(
-      'SELECT COUNT(*) FROM public.gear_has_passives',
-    );
+    const result = await this.dataSource.query('SELECT COUNT(*) FROM public.gear_has_passives');
     return result[0].count > 0;
   }
 
