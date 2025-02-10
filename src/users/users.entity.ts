@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Permission } from '../auth/permission.entity';
+import { RefreshToken } from '../auth/refresh-token.entity';
 
 @Entity()
 @Unique(['email', 'username'])
@@ -28,4 +30,11 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @ManyToMany(() => Permission)
+  @JoinTable()
+  permissions: Permission[];
+
+  @OneToMany(() => RefreshToken, (token) => token.user)
+  refreshTokens: RefreshToken[];
 }

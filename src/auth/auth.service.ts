@@ -7,12 +7,14 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { ActivityLogService } from '../activity-log/activity-log.service';
+import { RefreshToken } from './refresh-token.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private refreshTokenRepository: Repository<RefreshToken>,
     private jwtService: JwtService,
     private activityLogService: ActivityLogService,
   ) {}
@@ -72,5 +74,23 @@ export class AuthService {
 
     const token = this.jwtService.sign({ id: user.id, role: user.role });
     return { token };
+  }
+
+  async createAccessToken(user: User) {
+    return this.jwtService.sign({ sub: user.id }, { expiresIn: '15m' });
+  }
+
+  async createRefreshToken(user: User) {
+    const token = this.jwtService.sign({ sub: user.id }, { expiresIn: '7d' });
+
+    await this.refreshTokenRepository.save(
+      this.refreshTokenRepository.create({
+        token,
+        user,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      }),
+    );
+
+    return token;
   }
 }

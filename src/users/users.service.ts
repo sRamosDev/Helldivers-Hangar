@@ -105,4 +105,11 @@ export class UsersService {
     await this.usersRepository.save(user);
     return user;
   }
+
+  async getUserWithPermissions(id: number) {
+    return this.usersRepository.findOne({
+      where: { id },
+      relations: ['permissions'],
+    });
+  }
 }
