@@ -21,12 +21,15 @@ import { CreateGearDto } from './dto/createGear.dto';
 import { UpdateGearDto } from './dto/updateGear.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
+import { AzureStorageUtil } from '../utils/azure-storage.util';
 
 @ApiTags('Gear')
 @Controller('gear')
 export class GearController {
-  constructor(private readonly gearService: GearService) {}
+  constructor(
+    private readonly gearService: GearService,
+    private readonly azureStorageUtil: AzureStorageUtil,
+  ) {}
 
   @Post('image/:id')
   @ApiBearerAuth()
@@ -66,9 +69,9 @@ export class GearController {
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
       await new Promise((resolve) => setTimeout(resolve, 5000));
-      const imageUrl = await uploadToAzure(uniqueName, processedBuffer);
+      const imageUrl = await this.azureStorageUtil.uploadToAzure(uniqueName, processedBuffer);
       if (gear.image_url) {
-        await deleteFromAzure(gear.image_url);
+        await this.azureStorageUtil.deleteFromAzure(gear.image_url);
       }
       await this.gearService.updateImageUrl(+id, imageUrl);
       return { success: true, imageUrl };
@@ -93,7 +96,7 @@ export class GearController {
     if (file) {
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
-      imageUrl = await uploadToAzure(uniqueName, processedBuffer);
+      imageUrl = await this.azureStorageUtil.uploadToAzure(uniqueName, processedBuffer);
     }
     return this.gearService.create({ ...gearData, imageUrl });
   }
@@ -149,9 +152,9 @@ export class GearController {
     if (file) {
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
-      imageUrl = await uploadToAzure(uniqueName, processedBuffer);
+      imageUrl = await this.azureStorageUtil.uploadToAzure(uniqueName, processedBuffer);
       const gear = await this.gearService.findOne(+id);
-      if (gear?.image_url) await deleteFromAzure(gear.image_url);
+      if (gear?.image_url) await this.azureStorageUtil.deleteFromAzure(gear.image_url);
     } else {
       const gear = await this.gearService.findOne(+id);
       imageUrl = gear.image_url;
