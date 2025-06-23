@@ -3,9 +3,11 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const configService = app.get(ConfigService);
   app.setGlobalPrefix('api', { exclude: ['health', 'health/db'] });
   const config = new DocumentBuilder()
     .setTitle("Helldiver's Hangar API")
@@ -23,9 +25,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  const port = process.env.PORT || 3000;
+  const port = configService.get<number>('PORT') || 3500;
   app.enableCors({
-    origin: process.env.CORS_ORIGIN,
+    origin: configService.get<string>('CORS_ORIGIN'),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
