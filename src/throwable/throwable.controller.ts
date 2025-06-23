@@ -21,13 +21,16 @@ import { Roles } from '../auth/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { multerConfig, processImage } from '../utils/image-upload.util';
-import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
+import { AzureStorageUtil } from '../utils/azure-storage.util';
 import { CreateThrowableDto } from './dto/createThrowable.dto';
 import { UpdateThrowableDto } from './dto/updateThrowable.dto';
 
 @Controller('throwables')
 export class ThrowableController {
-  constructor(private readonly throwableService: ThrowableService) {}
+  constructor(
+    private readonly throwableService: ThrowableService,
+    private readonly azureStorageUtil: AzureStorageUtil,
+  ) {}
 
   @Post('image/:id')
   @ApiBearerAuth()
@@ -62,14 +65,13 @@ export class ThrowableController {
     try {
       const throwable = await this.throwableService.findOne(id);
       if (!throwable) {
-        // noinspection ExceptionCaughtLocallyJS
         throw new BadRequestException('Throwable not found');
       }
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
-      const imageUrl = await uploadToAzure(uniqueName, processedBuffer);
+      const imageUrl = await this.azureStorageUtil.uploadToAzure(uniqueName, processedBuffer);
       if (throwable.image_url) {
-        await deleteFromAzure(throwable.image_url);
+        await this.azureStorageUtil.deleteFromAzure(throwable.image_url);
       }
       await this.throwableService.updateImageUrl(id, imageUrl);
       return { success: true, imageUrl };
@@ -92,7 +94,7 @@ export class ThrowableController {
     if (file) {
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
-      image_url = await uploadToAzure(uniqueName, processedBuffer);
+      image_url = await this.azureStorageUtil.uploadToAzure(uniqueName, processedBuffer);
     }
     return this.throwableService.create({ ...throwableData, image_url });
   }
@@ -138,7 +140,7 @@ export class ThrowableController {
     if (file) {
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
-      image_url = await uploadToAzure(uniqueName, processedBuffer);
+      image_url = await this.azureStorageUtil.uploadToAzure(uniqueName, processedBuffer);
     } else {
       const throwable = await this.throwableService.findOne(id);
       image_url = throwable.image_url;
