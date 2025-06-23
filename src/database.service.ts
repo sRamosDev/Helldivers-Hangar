@@ -2,21 +2,22 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
   private readonly logger = new Logger(DatabaseService.name);
 
-  constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource, private configService: ConfigService) {}
 
   async onModuleInit() {
     await this.delay(1000);
     this.logger.log('DatabaseService has started');
     const isPopulated = await this.isDatabasePopulated();
     if (!isPopulated) {
-      const shouldPopulate = process.argv.includes('--populate') || process.env.POPULATE_DB.toLowerCase() === 'true';
-      const shouldNotPopulate =
-        process.argv.includes('--no-populate') || process.env.POPULATE_DB.toLowerCase() === 'false';
+      const populateDb = this.configService.get<string>('POPULATE_DB')?.toLowerCase();
+      const shouldPopulate = process.argv.includes('--populate') || populateDb === 'true';
+      const shouldNotPopulate = process.argv.includes('--no-populate') || populateDb === 'false';
       if (shouldPopulate) {
         this.logger.log('Populating database with demo data');
         await this.populateDatabase();
@@ -40,7 +41,7 @@ export class DatabaseService implements OnModuleInit {
   }
 
   private async populateDatabase() {
-    const sqlFilePath = path.join(__dirname, '../populate-db.sql');
+    const sqlFilePath = path.join(process.cwd(), 'populate-db.sql');
     const sql = fs.readFileSync(sqlFilePath, 'utf8');
     await this.dataSource.query(sql);
   }
