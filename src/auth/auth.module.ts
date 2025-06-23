@@ -9,17 +9,30 @@ import { User } from '../users/users.entity';
 import { ActivityLogModule } from '../activity-log/activity-log.module';
 import { Permission } from './permission.entity';
 import { RefreshToken } from './refresh-token.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      privateKey: process.env.JWT_PRIVATE_KEY,
-      publicKey: process.env.JWT_PUBLIC_KEY,
-      signOptions: {
-        expiresIn: process.env.JWT_EXPIRES,
-        algorithm: 'RS256',
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        const privateKeyPath = configService.get<string>('JWT_PRIVATE_KEY_PATH');
+        const publicKeyPath = configService.get<string>('JWT_PUBLIC_KEY_PATH');
+        const privateKey = privateKeyPath ? fs.readFileSync(privateKeyPath, 'utf8') : undefined;
+        const publicKey = publicKeyPath ? fs.readFileSync(publicKeyPath, 'utf8') : undefined;
+        return {
+          privateKey,
+          publicKey,
+          signOptions: {
+            expiresIn: configService.get<string>('JWT_EXPIRES') || '1h',
+            algorithm: 'RS256',
+          },
+        };
       },
+      inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User, Permission, RefreshToken]),
     ActivityLogModule,
