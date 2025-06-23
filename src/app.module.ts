@@ -25,14 +25,14 @@ import { HealthModule } from './health/health.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async () => {
+      useFactory: async (configService: ConfigService) => {
         const dbConfig: TypeOrmModuleOptions = {
           type: 'postgres',
-          host: process.env.DB_HOST,
-          port: +process.env.DB_PORT,
-          username: process.env.DB_USERNAME,
-          password: process.env.DB_PASSWORD,
-          database: process.env.DB_NAME,
+          host: configService.get<string>('DB_HOST'),
+          port: +configService.get<string>('DB_PORT'),
+          username: configService.get<string>('DB_USERNAME'),
+          password: configService.get<string>('DB_PASSWORD'),
+          database: configService.get<string>('DB_NAME'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           migrations: [__dirname + '/migrations/*{.ts,.js}'],
           ssl: true,
@@ -41,7 +41,7 @@ import { HealthModule } from './health/health.module';
               rejectUnauthorized: false,
             },
           },
-          synchronize: process.env.DB_SYNCHRONIZE === 'true',
+          synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true',
         };
         return dbConfig;
       },
