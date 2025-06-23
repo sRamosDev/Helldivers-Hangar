@@ -1,7 +1,6 @@
 // data-source.ts
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
-// Import any other entities if needed
 
 // Load environment variables (adjust the path if necessary)
 dotenv.config();
@@ -21,7 +20,7 @@ export const AppDataSource = new DataSource({
       rejectUnauthorized: false,
     },
   },
-  synchronize: process.env.DB_SYNCHRONIZE === 'false',
+  synchronize: process.env.DB_SYNCHRONIZE === 'true',
 });
 
 AppDataSource.initialize()
