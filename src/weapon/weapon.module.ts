@@ -6,10 +6,11 @@ import { Trait } from '../trait/trait.entity';
 import { FiringMode } from '../firingMode/firingMode.entity';
 import { AuthModule } from '../auth/auth.module';
 import { WeaponController } from './weapon.controller';
+import { AzureStorageUtil } from '../utils/azure-storage.util';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Weapon, Trait, FiringMode]), AuthModule],
   controllers: [WeaponController],
-  providers: [WeaponService],
+  providers: [WeaponService, AzureStorageUtil],
 })
 export class WeaponModule {}

@@ -21,13 +21,16 @@ import { Express } from 'express';
 import { multerConfig, processImage } from '../utils/image-upload.util';
 import { CreateWeaponDto } from './dto/createWeapon.dto';
 import { UpdateWeaponDto } from './dto/updateWeapon.dto';
-import { deleteFromAzure, uploadToAzure } from '../utils/azure-storage.util';
+import { AzureStorageUtil } from '../utils/azure-storage.util';
 import { Weapon } from './weapon.entity';
 
 @ApiTags('Weapos')
 @Controller('weapons')
 export class WeaponController {
-  constructor(private readonly weaponService: WeaponService) {}
+  constructor(
+    private readonly weaponService: WeaponService,
+    private readonly azureStorageUtil: AzureStorageUtil,
+  ) {}
 
   @Post('image/:id')
   @ApiBearerAuth()
@@ -68,10 +71,10 @@ export class WeaponController {
 
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
-      const imageUrl = await uploadToAzure(uniqueName, processedBuffer);
+      const imageUrl = await this.azureStorageUtil.uploadToAzure(uniqueName, processedBuffer);
 
       if (weapon.image_url) {
-        await deleteFromAzure(weapon.image_url);
+        await this.azureStorageUtil.deleteFromAzure(weapon.image_url);
       }
 
       await this.weaponService.updateImageUrl(+id, imageUrl);
@@ -170,7 +173,7 @@ export class WeaponController {
     let imageUrl = '';
     if (file) {
       const processedBuffer = await processImage(file.buffer);
-      imageUrl = await uploadToAzure(file.filename, processedBuffer);
+      imageUrl = await this.azureStorageUtil.uploadToAzure(file.filename, processedBuffer);
     }
     return this.weaponService.create({ ...weaponData, imageUrl });
   }
@@ -279,9 +282,9 @@ export class WeaponController {
     if (file) {
       const processedBuffer = await processImage(file.buffer);
       const uniqueName = `${uuidv4()}.webp`;
-      imageUrl = await uploadToAzure(uniqueName, processedBuffer);
+      imageUrl = await this.azureStorageUtil.uploadToAzure(uniqueName, processedBuffer);
       const weapon = await this.weaponService.findOne(+id);
-      if (weapon?.image_url) await deleteFromAzure(weapon.image_url);
+      if (weapon?.image_url) await this.azureStorageUtil.deleteFromAzure(weapon.image_url);
     } else {
       const weapon = await this.weaponService.findOne(+id);
       imageUrl = weapon.image_url;
